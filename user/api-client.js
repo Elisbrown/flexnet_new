@@ -60,9 +60,9 @@ class UserAPIClient {
     }
 
     // USER PIN CHANGE
-    async changePin(currentPin, newPin) {
+    async changePin(oldPin, newPin) {
         return this.request('POST', '/user/change-pin', { 
-            current_pin: currentPin, 
+            old_pin: oldPin, 
             new_pin: newPin 
         });
     }

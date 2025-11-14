@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <meta name="description" content="FlexNet GPS Household Management System - Admin Dashboard">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/user/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/user/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --bg-dark: #050505;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #111 0, #000 40%, #000 100%);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-login-shell {
+      width: 100%;
+      padding: 1.5rem;
+    }
+
+    .admin-login-card {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #050505;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.75);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+    }
+
+    /* Left side – green strip + logo + tagline */
+    .admin-login-left {
+      background: #000000;
+      position: relative;
+      padding: 2.8rem 2.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .admin-logo-strip {
+      position: relative;
+      width: 82%;
+      max-width: 260px;
+      height: 230px;
+      background: black;
+      border-bottom-left-radius: 180px;
+      border-bottom-right-radius: 180px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .admin-logo-circle {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-logo-circle img {
+      max-width: 70%;
+      height: auto;
+    }
+
+    .admin-left-copy {
+      margin-top: 2.4rem;
+    }
+
+    .admin-left-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-self: center;
+    }
+
+    .admin-left-subtitle {
+      font-size: 0.98rem;
+      color: #d7d7d7;
+      max-width: 320px;
+       display: flex;
+      align-items: center;
+      justify-self: center;
+    }
+
+    .admin-left-footnote {
+      margin-top: 2.4rem;
+      font-size: 0.82rem;
+      color: #7c7c7c;
+       display: flex;
+      align-items: center;
+      justify-self: center;
+    }
+
+    /* Right side – form */
+    .admin-login-right {
+      background: #ffffff;
+      color: #000000;
+      padding: 2.6rem 2.4rem 2.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .admin-login-heading {
+      margin-bottom: 0.4rem;
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .admin-login-subheading {
+      margin-bottom: 1.8rem;
+      font-size: 0.96rem;
+      color: #5b5b5b;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: #444444;
+    }
+
+    .form-control.admin-input {
+      border-radius: 999px;
+      padding: 0.8rem 1.1rem;
+      font-size: 0.95rem;
+      border: 1.5px solid #d2d2d2;
+      box-shadow: none;
+    }
+
+    .form-control.admin-input:focus {
+      border-color: #000000;
+      box-shadow: 0 0 0 1px #00000011;
+    }
+
+    .admin-login-row {
+      margin-bottom: 0.9rem;
+    }
+
+    .admin-remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.6rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.86rem;
+    }
+
+    .admin-link {
+      color: #111111;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .admin-link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-admin-login {
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 0.9rem 1rem;
+      background: var(--flex-green);
+      color: #000000;
+      font-weight: 700;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .btn-admin-login:hover,
+    .btn-admin-login:focus {
+      background: #37f17a;
+    }
+
+    .btn-admin-login i {
+      font-size: 1.1rem;
+    }
+
+    .admin-login-footnote {
+      margin-top: 1.3rem;
+      font-size: 0.8rem;
+      color: #7c7c7c;
+    }
+
+    /* Responsive – stack on small screens */
+    @media (max-width: 768px) {
+      body {
+        align-items: flex-start;
+      }
+
+      .admin-login-shell {
+        padding: 1.2rem;
+      }
+
+      .admin-login-card {
+        grid-template-columns: 1fr;
+        border-radius: 28px;
+      }
+
+      .admin-login-left {
+        padding: 2rem 1.6rem 1.4rem;
+      }
+
+      .admin-login-right {
+        padding: 2rem 1.6rem 2rem;
+      }
+
+      .admin-left-footnote {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-login-shell">
+  <div class="admin-login-card">
+
+    <!-- LEFT SIDE (brand) -->
+    <div class="admin-login-left">
+      <div>
+        <div class="admin-logo-strip">
+          <div class="admin-logo-circle">
+            <!-- Reuse your logo SVG -->
+            <!-- Example: <img src="../assets/Asset9.svg" alt="Flexnet logo"> -->
+           <img src="../flexnet-logo.svg" alt="Flexnet logo">
+          </div>
+        </div>
+
+        <div class="admin-left-copy">
+          <div class="admin-left-title">Flexnet Admin</div>
+          <div class="admin-left-subtitle">
+            Monitor locations, manage subscriptions, review payments, and respond
+            to support tickets – all from one powerful dashboard.
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-left-footnote">
+        Only authorized staff may access this portal. All actions are logged for audit.
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE (form) -->
+    <div class="admin-login-right">
+      <h1 class="admin-login-heading">Sign in to Admin</h1>
+      <p class="admin-login-subheading">
+        Use your admin email and password to access the Flexnet control panel.
+      </p>
+
+      <form id="adminLoginForm" autocomplete="on">
+        <div class="admin-login-row">
+          <label for="adminEmail" class="form-label">Work Email</label>
+          <input
+            type="email"
+            class="form-control admin-input"
+            id="adminEmail"
+            name="email"
+            placeholder="admin@flexnet.cm"
+            required
+          >
+        </div>
+
+        <div class="admin-login-row">
+          <label for="adminPassword" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control admin-input"
+            id="adminPassword"
+            name="password"
+            placeholder="Enter your password"
+            required
+          >
+        </div>
+
+        <div class="admin-remember-row">
+          <div class="form-check m-0">
+            <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">
+              Remember me
+            </label>
+          </div>
+          <a href="#" class="admin-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-admin-login">
+          Login
+          <i class="bi bi-arrow-right"></i>
+        </button>
+
+        <div class="admin-login-footnote">
+          Having trouble? Contact a system administrator to verify your access or reset your account.
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Admin login form handler - integrated with Express API
+  document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+
+    if (!email || !password) {
+      alert('Please enter both email and password');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in...';
+
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Store token and user info
+        localStorage.setItem('admin_token', data.data.token);
+        localStorage.setItem('userType', 'admin');
+        localStorage.setItem('admin', JSON.stringify(data.data.admin));
+        
+        // Redirect to dashboard
+        window.location.href = '/admin/dashboard.html';
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Connection error. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+</script>
+
+</body>
+</html>

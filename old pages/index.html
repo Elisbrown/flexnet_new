@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Office Cleaning Rota</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --border: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #b91c1c;
+      --radius-lg: 16px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e0f2fe, #f5f7fb 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      padding: 20px 18px 24px;
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        padding: 24px 28px 28px;
+      }
+    }
+
+    .app-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .app-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .app-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 840px) {
+      .layout {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+        gap: 18px;
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px 14px 16px;
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        padding: 16px 16px 18px;
+      }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-desc {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .name-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .name-input-row .grow {
+      flex: 1 1 180px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      margin-bottom: 2px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+    }
+
+    .people-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+      max-height: 140px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .person-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+    }
+
+    .person-chip button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .person-chip button:hover {
+      color: #111827;
+    }
+
+    .people-count {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #e5e7eb;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .error {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--danger);
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .groups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .groups {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .group-card {
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--border);
+      padding: 8px 10px;
+      background: #f9fafb;
+    }
+
+    .group-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      background: #eef2ff;
+      color: #4f46e5;
+      white-space: nowrap;
+    }
+
+    .schedule-table-wrapper {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: #f9fafb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead {
+      background: #eff6ff;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .group-label {
+      font-weight: 600;
+      font-size: 0.82rem;
+      margin-bottom: 2px;
+    }
+
+    .names-list {
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <div>
+        <div class="app-title">Office Cleaning Rota</div>
+        <div class="app-subtitle">Add any number of people, auto-split into 2 groups, and generate a weekly schedule.</div>
+      </div>
+      <div class="tag">Dynamic groups · CSV export</div>
+    </div>
+
+    <div class="layout">
+      <!-- Left: Input -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Add People</div>
+        </div>
+        <p class="card-desc">
+          Type a name, click <strong>Add person</strong> (or press Enter).  
+          The system will split everyone evenly into <strong>Group 1</strong> and <strong>Group 2</strong>. If there’s an extra person, they’re assigned randomly to one group.
+        </p>
+
+        <div class="name-input-row">
+          <div class="grow">
+            <label for="name-input">New person</label>
+            <input
+              type="text"
+              id="name-input"
+              placeholder="Type a name and press Enter or 'Add person'"
+            />
+          </div>
+          <button type="button" class="btn-secondary" id="add-btn">
+            Add person
+          </button>
+        </div>
+
+        <div class="people-count" id="people-count">No people added yet.</div>
+        <div class="people-list" id="people-list"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-secondary" id="clear-btn">
+            Reset
+          </button>
+          <button type="button" class="btn-primary" id="generate-btn">
+            Generate Schedule
+          </button>
+          <button type="button" class="btn-secondary" id="export-btn" disabled>
+            Export CSV
+          </button>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+        <div class="hint">
+          Tip: You need at least <strong>2 people</strong> to generate a rota.  
+          Click “Generate Schedule” again any time to reshuffle groups.
+        </div>
+      </div>
+
+      <!-- Right: Output -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Result</div>
+        </div>
+        <p class="card-desc">
+          <strong>Group 1</strong> cleans on Monday, Wednesday, Friday.<br />
+          <strong>Group 2</strong> cleans on Tuesday, Thursday, Saturday.
+        </p>
+
+        <div id="groups-output" class="groups" style="display:none;"></div>
+
+        <div id="schedule-output" class="schedule-table-wrapper" style="display:none; margin-top: 10px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 26%;">Day</th>
+                <th>Assigned Group</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-body">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const addBtn = document.getElementById('add-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const exportBtn = document.getElementById('export-btn');
+    const nameInput = document.getElementById('name-input');
+    const peopleListEl = document.getElementById('people-list');
+    const peopleCountEl = document.getElementById('people-count');
+    const errorBox = document.getElementById('error');
+    const groupsOutput = document.getElementById('groups-output');
+    const scheduleWrapper = document.getElementById('schedule-output');
+    const scheduleBody = document.getElementById('schedule-body');
+
+    let people = [];
+    let currentGroup1 = [];
+    let currentGroup2 = [];
+
+    const dayConfig = [
+      { day: 'Monday', groupId: 1 },
+      { day: 'Tuesday', groupId: 2 },
+      { day: 'Wednesday', groupId: 1 },
+      { day: 'Thursday', groupId: 2 },
+      { day: 'Friday', groupId: 1 },
+      { day: 'Saturday', groupId: 2 }
+    ];
+
+    function updatePeopleCount() {
+      if (people.length === 0) {
+        peopleCountEl.textContent = 'No people added yet.';
+      } else if (people.length === 1) {
+        peopleCountEl.textContent = '1 person added.';
+      } else {
+        peopleCountEl.textContent = people.length + ' people added.';
+      }
+    }
+
+    function renderPeopleList() {
+      peopleListEl.innerHTML = '';
+      people.forEach((name, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'person-chip';
+        chip.innerHTML = `
+          <span>${name}</span>
+          <button type="button" class="remove-person" data-index="${index}">&times;</button>
+        `;
+        peopleListEl.appendChild(chip);
+      });
+      updatePeopleCount();
+    }
+
+    peopleListEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-person')) {
+        const idx = parseInt(e.target.dataset.index, 10);
+        if (!isNaN(idx)) {
+          people.splice(idx, 1);
+          renderPeopleList();
+          // Once the list changes, we should disable export until a new schedule is generated
+          exportBtn.disabled = true;
+          groupsOutput.style.display = 'none';
+          scheduleWrapper.style.display = 'none';
+        }
+      }
+    });
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = 'block';
+    }
+
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.style.display = 'none';
+    }
+
+    function shuffle(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function splitIntoGroups(allNames) {
+      const shuffled = shuffle(allNames);
+      const total = shuffled.length;
+      const basePerGroup = Math.floor(total / 2);
+      const leftoverCount = total - basePerGroup * 2;
+
+      let group1 = shuffled.slice(0, basePerGroup);
+      let group2 = shuffled.slice(basePerGroup, basePerGroup * 2);
+      const leftovers = shuffled.slice(basePerGroup * 2);
+
+      // Distribute leftovers randomly between the two groups
+      leftovers.forEach(name => {
+        if (Math.random() < 0.5) {
+          group1.push(name);
+        } else {
+          group2.push(name);
+        }
+      });
+
+      return { group1, group2 };
+    }
+
+    function renderGroups(group1, group2) {
+      groupsOutput.innerHTML = '';
+
+      const group1Card = document.createElement('div');
+      group1Card.className = 'group-card';
+      group1Card.innerHTML = `
+        <div class="group-title">Group 1 (${group1.length})</div>
+        <div class="pill-row">
+          ${group1.map(name => `<span class="pill">${name}</span>`).join('')}
+        </div>
+      `;
+
+      const group2Card = document.createElement('div');
+      group2Card.className = 'group-card';
+      group2Card.innerHTML = `
+        <div class="group-title">Group 2 (${group2.length})</div>
+        <div class="pill-row">
+          ${group2.map(name => `<span class="pill">${name}</span>`).join('')}
+        </div>
+      `;
+
+      groupsOutput.appendChild(group1Card);
+      groupsOutput.appendChild(group2Card);
+      groupsOutput.style.display = 'grid';
+    }
+
+    function renderSchedule(group1, group2) {
+      scheduleBody.innerHTML = '';
+
+      dayConfig.forEach(cfg => {
+        const tr = document.createElement('tr');
+        const names = cfg.groupId === 1 ? group1 : group2;
+
+        tr.innerHTML = `
+          <td>${cfg.day}</td>
+          <td>
+            <div class="group-label">Group ${cfg.groupId}</div>
+            <div class="names-list">${names.join(', ')}</div>
+          </td>
+        `;
+        scheduleBody.appendChild(tr);
+      });
+
+      scheduleWrapper.style.display = 'block';
+    }
+
+    function addPersonFromInput() {
+      const value = nameInput.value.trim();
+      if (!value) {
+        return;
+      }
+      people.push(value);
+      nameInput.value = '';
+      renderPeopleList();
+      clearError();
+    }
+
+    addBtn.addEventListener('click', () => {
+      addPersonFromInput();
+    });
+
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addPersonFromInput();
+      }
+    });
+
+    generateBtn.addEventListener('click', () => {
+      clearError();
+      if (people.length < 2) {
+        showError('Please add at least 2 people before generating the schedule.');
+        groupsOutput.style.display = 'none';
+        scheduleWrapper.style.display = 'none';
+        exportBtn.disabled = true;
+        return;
+      }
+
+      const { group1, group2 } = splitIntoGroups(people);
+      currentGroup1 = group1;
+      currentGroup2 = group2;
+
+      renderGroups(group1, group2);
+      renderSchedule(group1, group2);
+
+      exportBtn.disabled = false;
+    });
+
+    clearBtn.addEventListener('click', () => {
+      people = [];
+      currentGroup1 = [];
+      currentGroup2 = [];
+      nameInput.value = '';
+      renderPeopleList();
+      clearError();
+      groupsOutput.style.display = 'none';
+      scheduleWrapper.style.display = 'none';
+      exportBtn.disabled = true;
+    });
+
+    function exportToCSV() {
+      if (exportBtn.disabled || (currentGroup1.length === 0 && currentGroup2.length === 0)) {
+        return;
+      }
+
+      const rows = [];
+      rows.push('Day,Group,Members');
+
+      dayConfig.forEach(cfg => {
+        const groupId = cfg.groupId;
+        const names = groupId === 1 ? currentGroup1 : currentGroup2;
+        const members = names.join(' | ').replace(/"/g, '""'); // escape quotes
+        rows.push(`${cfg.day},"Group ${groupId}","${members}"`);
+      });
+
+      const csvContent = rows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cleaning_rota.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    exportBtn.addEventListener('click', exportToCSV);
+
+    // initial state
+    renderPeopleList();
+  </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --bg-dark: #050505;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      padding: 0 1.8rem 2.4rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-header {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* YOUR UPDATED COMPONENT */
+    .green-strip {
+      width: 64vw;
+      max-width: 200px;
+      height: 35vh;
+      background: var(--flex-green);
+      border-bottom-left-radius: 180px;
+      border-bottom-right-radius: 180px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      position: relative;
+      overflow: visible;
+    }
+
+    .logo-circle {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark {
+      max-width: 70%;
+      max-height: 70%;
+      display: block;
+    }
+    /* END UPDATED COMPONENT */
+
+    .login-main {
+      margin-top: 4.5rem; /* pushes text below logo */
+    }
+
+    .login-title-main {
+      font-size: 2.1rem;
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+      text-align: left;
+    }
+
+    .login-title-brand {
+      font-size: 2.1rem;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--flex-green);
+      margin-bottom: 2.2rem;
+      text-align: left;
+    }
+
+    .login-form {
+      margin-top: 0.5rem;
+    }
+
+    .login-form .form-control {
+      border-radius: 999px;
+      padding: 0.9rem 1.3rem;
+      font-size: 1.05rem;
+      border: none;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .login-form .form-control::placeholder {
+      color: #555555;
+      opacity: 1;
+    }
+
+    .login-form .form-control:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--flex-green);
+    }
+
+    .btn-login {
+      margin-top: 2.1rem;
+      border-radius: 999px;
+      padding: 0.7rem 2.4rem;
+      border: none;
+      background: var(--flex-green);
+      color: #000000;
+      font-weight: 600;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-login:hover,
+    .btn-login:focus {
+      background: #37f17a;
+      color: #000000;
+    }
+
+    .btn-login .arrow {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* Center the button horizontally */
+    .login-button-row, .login-title-main, .login-title-brand {
+      display: flex;
+      justify-content: center;
+    }
+
+    @media (min-width: 768px) {
+      .login-screen {
+        max-width: 430px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-screen">
+
+    <!-- Top strip + logo -->
+    <div class="login-header">
+      <div class="green-strip">
+        <div class="logo-circle">
+          <!-- Replace with your actual SVG filename -->
+          <img src="flexnet-logo.svg" alt="Flexnet logo" class="logo-mark">
+        </div>
+      </div>
+    </div>
+
+    <!-- Welcome text + form -->
+    <div class="login-main">
+      <div class="login-title">
+        <div class="login-title-main">Welcome to</div>
+        <div class="login-title-brand">Flexnet</div>
+      </div>
+
+      <form class="login-form" autocomplete="off">
+        <div class="mb-3">
+          <input type="tel"
+                 class="form-control"
+                 id="phone"
+                 placeholder="Phone Number"
+                 inputmode="tel">
+        </div>
+
+        <div class="mb-2">
+          <input type="password"
+                 class="form-control"
+                 id="pin"
+                 placeholder="PIN"
+                 maxlength="6"
+                 inputmode="numeric">
+        </div>
+
+        <div class="login-button-row">
+          <button type="submit" class="btn-login">
+            Login <span class="arrow">&rarr;</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS bundle (optional for this static UI, but handy later) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // User login form handler - integrated with Express API
+    document.querySelector('.login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const phone_number = document.getElementById('phone').value.trim();
+      const pin = document.getElementById('pin').value.trim();
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+
+      if (!phone_number || !pin) {
+        alert('Please enter both phone number and PIN');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+
+      try {
+        const response = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ phone_number, pin })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Store token and user info
+          localStorage.setItem('token', data.data.token);
+          localStorage.setItem('userType', 'user');
+          localStorage.setItem('user', JSON.stringify(data.data.user));
+          
+          // Check if user needs to change PIN
+          if (data.data.user.requires_pin_change) {
+            window.location.href = '/change-pin.html';
+          } else {
+            window.location.href = '/dashboard.html';
+          }
+        } else {
+          alert(data.message || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Connection error. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+  </script>
+<script src="/pwa-init.js"></script>
+</body>
+</html>

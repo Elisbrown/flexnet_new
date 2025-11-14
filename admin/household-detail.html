@@ -1,0 +1,1652 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Household Detail · Room 12</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/user/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/user/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --bg-sidebar: #000000;
+      --border-subtle: #222222;
+      --text-muted: #a5a5a5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid #141414;
+      padding: 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .admin-sidebar-logo-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--flex-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+
+    .admin-sidebar-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1.1;
+    }
+
+    .admin-sidebar-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.8rem;
+      flex: 1;
+    }
+
+    .admin-nav-item + .admin-nav-item {
+      margin-top: 0.2rem;
+    }
+
+    .admin-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 999px;
+      color: #fdfdfd;
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .admin-nav-link i {
+      font-size: 1rem;
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    .admin-nav-link:hover {
+      background: #111111;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active {
+      background: var(--flex-green);
+      color: #000000;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active i {
+      color: #000000;
+    }
+
+    .admin-sidebar-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* MAIN */
+    .admin-main {
+      flex: 1;
+      background: radial-gradient(circle at top, #151515 0, #050505 45%, #000 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOPBAR */
+    .admin-topbar {
+      padding: 1rem 1.7rem 0.8rem;
+      border-bottom: 1px solid #151515;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .topbar-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .topbar-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-hamburger {
+      display: none;
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 1.4rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .topbar-search {
+      position: relative;
+      min-width: 220px;
+    }
+
+    .topbar-search input {
+      background: #070707;
+      border-radius: 999px;
+      border: 1px solid #222222;
+      padding: 0.5rem 2.1rem 0.5rem 0.9rem;
+      color: #ffffff;
+      font-size: 0.86rem;
+    }
+
+    .topbar-search input::placeholder {
+      color: #555555;
+    }
+
+    .topbar-search input:focus {
+      outline: none;
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.25);
+    }
+
+    .topbar-search i {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: #666666;
+    }
+
+    .topbar-admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+      border-radius: 999px;
+      background: #050505;
+      border: 1px solid #222222;
+    }
+
+    .topbar-admin-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #333333;
+    }
+
+    .topbar-admin-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .topbar-admin-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .topbar-admin-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .topbar-admin-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-lang-badge {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid #333333;
+      color: #cccccc;
+    }
+
+    /* CONTENT */
+    .admin-content {
+      padding: 1.4rem 1.7rem 2rem;
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    /* PAGE HEADER */
+    .page-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .page-header-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .breadcrumb-line {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .page-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .page-header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.3rem;
+    }
+
+    .meta-chip {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      border: 1px solid #333333;
+      color: #cccccc;
+    }
+
+    .meta-chip.accent {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    .meta-chip.status-active {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    .page-header-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .btn-outline-back {
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f2f2f2;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-outline-back i { font-size: 1rem; }
+
+    .btn-reset-pin {
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      border: 1px solid #ff4b5c;
+      background: transparent;
+      color: #ff4b5c;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-reset-pin:hover {
+      background: rgba(220, 53, 69, 0.16);
+    }
+
+    /* CARD WRAPPER */
+    .content-card {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    /* TABS */
+    .nav-tabs {
+      border-bottom-color: #222222;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.86rem;
+      color: #cfcfcf;
+      background: transparent;
+      margin-right: 0.3rem;
+    }
+
+    .nav-tabs .nav-link:hover {
+      color: #ffffff;
+      background: #111111;
+    }
+
+    .nav-tabs .nav-link.active {
+      background: var(--flex-green);
+      color: #000000;
+    }
+
+    .tab-content {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* OVERVIEW */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1.2fr;
+      gap: 1rem;
+    }
+
+    .overview-card {
+      background: #070707;
+      border-radius: 16px;
+      border: 1px solid #202020;
+      padding: 0.9rem 1rem;
+    }
+
+    .overview-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .overview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      font-size: 0.86rem;
+    }
+
+    .overview-label {
+      color: var(--text-muted);
+    }
+
+    .overview-value {
+      font-weight: 500;
+    }
+
+    .quick-actions-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .quick-action-btn {
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f5f5f5;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .quick-action-btn i {
+      font-size: 0.9rem;
+    }
+
+    .quick-action-btn:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* SUBSCRIPTION TAB */
+    .subscription-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .btn-sub-action {
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f5f5f5;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn-sub-action.primary {
+      background: var(--flex-green);
+      color: #000000;
+      border-color: var(--flex-green);
+    }
+
+    .btn-sub-action:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    .btn-sub-action.primary:hover {
+      background: #37f17a;
+      color: #000000;
+    }
+
+    .sub-summary {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .sub-history {
+      margin-top: 0.5rem;
+    }
+
+    .sub-history-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid #141414;
+      font-size: 0.82rem;
+    }
+
+    .sub-history-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--flex-green);
+      margin-top: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .sub-history-meta {
+      color: var(--text-muted);
+    }
+
+    /* PAYMENTS TAB */
+    .table-wrapper {
+      border-radius: 12px;
+      border: 1px solid #202020;
+      overflow: auto;
+      max-height: 420px;
+    }
+
+    .table-dark-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .table-dark-custom thead {
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-dark-custom th,
+    .table-dark-custom td {
+      padding: 0.55rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .table-dark-custom tbody tr:nth-child(even) {
+      background: #060606;
+    }
+
+    .badge-status {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+    }
+
+    .badge-status.success {
+      background: rgba(39, 228, 106, 0.16);
+      color: var(--flex-green);
+    }
+
+    .badge-status.pending {
+      background: rgba(255, 193, 7, 0.16);
+      color: #ffc107;
+    }
+
+    .badge-status.failed {
+      background: rgba(220, 53, 69, 0.16);
+      color: #ff4b5c;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f1f1f1;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* SUPPORT TAB */
+    .support-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+      gap: 1rem;
+    }
+
+    .support-list {
+      max-height: 360px;
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid #202020;
+      padding: 0.6rem;
+      background: #060606;
+    }
+
+    .ticket-item {
+      padding: 0.55rem 0.6rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      margin-bottom: 0.45rem;
+      font-size: 0.83rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      cursor: pointer;
+    }
+
+    .ticket-item:hover {
+      border-color: #333333;
+    }
+
+    .ticket-subject {
+      font-weight: 600;
+    }
+
+    .ticket-meta {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .ticket-status-chip {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+    }
+
+    .ticket-status-chip.open {
+      background: rgba(0, 123, 255, 0.16);
+      color: #58a9ff;
+    }
+
+    .ticket-status-chip.closed {
+      background: rgba(128, 128, 128, 0.16);
+      color: #b3b3b3;
+    }
+
+    .support-compose {
+      background: #060606;
+      border-radius: 14px;
+      border: 1px solid #202020;
+      padding: 0.8rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .support-compose textarea {
+      font-size: 0.86rem;
+      background: #050505;
+      color: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #333333;
+      min-height: 110px;
+    }
+
+    .support-compose textarea:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .btn-send-reply {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000000;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+      align-self: flex-end;
+    }
+
+    .btn-send-reply:hover {
+      background: #37f17a;
+    }
+
+    /* AUDIT TAB */
+    .audit-footnote {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    /* MODALS */
+    .modal-dark .modal-content {
+      background: #050505;
+      color: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #333333;
+    }
+
+    .modal-dark .modal-header {
+      border-bottom: 1px solid #222222;
+    }
+
+    .modal-dark .btn-close {
+      filter: invert(1);
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      color: #e0e0e0;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 0.85rem;
+      background: #050505;
+      color: #ffffff;
+      border: 1px solid #333333;
+      border-radius: 10px;
+    }
+
+    .form-control::placeholder {
+      color: #666666;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .btn-primary-compact {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000000;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-danger-compact {
+      border-radius: 999px;
+      background: #ff4b5c;
+      color: #ffffff;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-primary-compact:hover {
+      background: #37f17a;
+    }
+
+    .btn-danger-compact:hover {
+      background: #ff263f;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      .admin-shell.sidebar-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+      }
+
+      .admin-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1030;
+        overflow-y: auto;
+        border-right: 1px solid #141414;
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-main {
+        margin-left: 0;
+      }
+
+      .topbar-hamburger {
+        display: inline-block;
+        cursor: pointer;
+        padding: 0.5rem;
+        margin: -0.5rem;
+      }
+
+      .topbar-hamburger:hover {
+        opacity: 0.8;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .overview-grid,
+      .support-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .topbar-search { display: none; }
+      .admin-content,
+      .admin-topbar { padding-inline: 1.1rem; }
+
+      .page-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header-actions {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo-circle">
+        <img src="../flexnet-logo.svg" alt="Flexnet logo" class="logo-mark">
+      </div>
+      <div>
+        <div class="admin-sidebar-title">Flexnet</div>
+        <div class="admin-sidebar-sub">Admin panel</div>
+      </div>
+    </div>
+
+    <ul class="admin-nav">
+      <li class="admin-nav-item">
+        <a href="dashboard.html" class="admin-nav-link">
+          <i class="bi bi-grid-1x2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="locations.html" class="admin-nav-link active">
+          <i class="bi bi-building"></i>
+          <span>Locations</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="payments.html" class="admin-nav-link">
+          <i class="bi bi-cash-coin"></i>
+          <span>Payments</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="support.html" class="admin-nav-link">
+          <i class="bi bi-life-preserver"></i>
+          <span>Support</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="faqs.html" class="admin-nav-link">
+          <i class="bi bi-question-circle"></i>
+          <span>FAQs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="admins.html" class="admin-nav-link">
+          <i class="bi bi-people"></i>
+          <span>Admins &amp; Roles</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="logs.html" class="admin-nav-link">
+          <i class="bi bi-activity"></i>
+          <span>System Logs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="profile.html" class="admin-nav-link">
+          <i class="bi bi-person-gear"></i>
+          <span>My Profile</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-sidebar-footer">
+      v1.0 · All admin actions are logged.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <!-- TOPBAR -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button class="topbar-hamburger" id="sidebarToggle" type="button">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <div class="topbar-title">Household Detail</div>
+          <div class="topbar-subtitle">
+            Dashboard / Locations / CITADEL COMPLEX HOLDINGS / Room 12
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <input type="text" placeholder="Search in admin…">
+          <i class="bi bi-search"></i>
+        </div>
+        <span class="topbar-lang-badge">EN • Light</span>
+        <div class="topbar-admin-pill">
+          <div class="topbar-admin-avatar">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400"
+                 alt="Admin avatar">
+          </div>
+          <div class="topbar-admin-meta">
+            <span class="topbar-admin-name">Elisbrown</span>
+            <span class="topbar-admin-role">System Admin</span>
+          </div>
+          <i class="bi bi-chevron-down" style="font-size: 0.8rem; color:#777;"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+      <!-- Page header -->
+      <div class="page-header-row">
+        <div class="page-header-main">
+          <div class="breadcrumb-line">Home / Locations / CITADEL COMPLEX HOLDINGS / Room 12</div>
+          <div class="page-title">Sunyin Elisbrown</div>
+          <div class="page-subtitle">
+            Room 12 · CITADEL COMPLEX HOLDINGS · Yaoundé
+          </div>
+          <div class="page-header-meta">
+            <span class="meta-chip status-active">Subscription: Active</span>
+            <span class="meta-chip">Expires: 22 Mar 2025</span>
+            <span class="meta-chip accent">MTN MoMo</span>
+            <span class="meta-chip">Phone: 679 690 703</span>
+          </div>
+        </div>
+
+        <div class="page-header-actions">
+          <button class="btn-outline-back" type="button" onclick="window.location.href='location-households.html'">
+            <i class="bi bi-arrow-left"></i> Back to Households
+          </button>
+          <button
+            class="btn-reset-pin"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#resetPinModal"
+          >
+            <i class="bi bi-key"></i> Reset PIN to 1234
+          </button>
+        </div>
+      </div>
+
+      <!-- Card with tabs -->
+      <section class="content-card">
+        <ul class="nav nav-tabs" id="householdTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab"
+                    data-bs-target="#overview" type="button" role="tab"
+                    aria-controls="overview" aria-selected="true">
+              Overview
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="subscription-tab" data-bs-toggle="tab"
+                    data-bs-target="#subscription" type="button" role="tab"
+                    aria-controls="subscription" aria-selected="false">
+              Subscription
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="payments-tab" data-bs-toggle="tab"
+                    data-bs-target="#payments" type="button" role="tab"
+                    aria-controls="payments" aria-selected="false">
+              Payments
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="support-tab" data-bs-toggle="tab"
+                    data-bs-target="#support" type="button" role="tab"
+                    aria-controls="support" aria-selected="false">
+              Support
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="audit-tab" data-bs-toggle="tab"
+                    data-bs-target="#audit" type="button" role="tab"
+                    aria-controls="audit" aria-selected="false">
+              Audit
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- OVERVIEW TAB -->
+          <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            <div class="overview-grid">
+              <div class="overview-card">
+                <div class="overview-title">Subscriber</div>
+                <div class="overview-row">
+                  <span class="overview-label">Full name</span>
+                  <span class="overview-value">Sunyin Elisbrown</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">Phone</span>
+                  <span class="overview-value">679 690 703</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">Email</span>
+                  <span class="overview-value">selisbrown@cirronyx.com</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">Preferred language</span>
+                  <span class="overview-value">English</span>
+                </div>
+              </div>
+
+              <div class="overview-card">
+                <div class="overview-title">Location & Access</div>
+                <div class="overview-row">
+                  <span class="overview-label">Apartment</span>
+                  <span class="overview-value">Room 12</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">Building</span>
+                  <span class="overview-value">CITADEL COMPLEX HOLDINGS</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">City</span>
+                  <span class="overview-value">Yaoundé</span>
+                </div>
+                <div class="overview-row">
+                  <span class="overview-label">Current status</span>
+                  <span class="overview-value">Active subscription</span>
+                </div>
+                <div class="overview-title" style="margin-top:0.8rem;">Quick actions</div>
+                <div class="quick-actions-group">
+                  <button class="quick-action-btn">
+                    <i class="bi bi-telephone"></i> Call subscriber
+                  </button>
+                  <button class="quick-action-btn">
+                    <i class="bi bi-envelope"></i> Send email
+                  </button>
+                  <button class="quick-action-btn">
+                    <i class="bi bi-chat-dots"></i> New support ticket
+                  </button>
+                  <button class="quick-action-btn">
+                    <i class="bi bi-arrow-repeat"></i> Renew subscription
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBSCRIPTION TAB -->
+          <div class="tab-pane fade" id="subscription" role="tabpanel" aria-labelledby="subscription-tab">
+            <div class="subscription-actions">
+              <button
+                class="btn-sub-action primary"
+                data-bs-toggle="modal"
+                data-bs-target="#subscriptionActionModal"
+                data-action="activate"
+              >
+                <i class="bi bi-play-circle"></i> Activate
+              </button>
+              <button
+                class="btn-sub-action"
+                data-bs-toggle="modal"
+                data-bs-target="#subscriptionActionModal"
+                data-action="renew"
+              >
+                <i class="bi bi-arrow-clockwise"></i> Renew
+              </button>
+              <button
+                class="btn-sub-action"
+                data-bs-toggle="modal"
+                data-bs-target="#subscriptionActionModal"
+                data-action="pause"
+              >
+                <i class="bi bi-pause-circle"></i> Pause
+              </button>
+              <button
+                class="btn-sub-action"
+                data-bs-toggle="modal"
+                data-bs-target="#subscriptionActionModal"
+                data-action="extend"
+              >
+                <i class="bi bi-plus-circle"></i> Extend
+              </button>
+            </div>
+
+            <div class="sub-summary">
+              Current status: <strong>Active</strong> · From <strong>22 Feb 2025</strong> to
+              <strong>22 Mar 2025</strong> (30 days). Channel: <strong>MTN MoMo</strong>.
+            </div>
+
+            <div class="sub-history">
+              <div class="overview-title">History</div>
+              <div class="sub-history-item">
+                <div class="sub-history-dot"></div>
+                <div>
+                  <div><strong>Renewed</strong> – 25,000 XAF · MTN MoMo</div>
+                  <div class="sub-history-meta">
+                    22 Feb 2025 · Admin: Elisbrown · Reference: MOMO-20250222-1234
+                  </div>
+                </div>
+              </div>
+              <div class="sub-history-item">
+                <div class="sub-history-dot"></div>
+                <div>
+                  <div><strong>Activated</strong> – 30 days</div>
+                  <div class="sub-history-meta">
+                    23 Jan 2025 · Admin: Jane Admin · Initial activation
+                  </div>
+                </div>
+              </div>
+              <div class="sub-history-item">
+                <div class="sub-history-dot"></div>
+                <div>
+                  <div><strong>Paused</strong> – 3 days</div>
+                  <div class="sub-history-meta">
+                    02 Jan 2025 · Reason: Travelling · Admin: NOC Agent
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PAYMENTS TAB -->
+          <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+            <div class="overview-title">Payment History</div>
+            <p class="sub-summary">
+              All payments associated with this household. Use verify / reject for pending
+              mobile money entries.
+            </p>
+
+            <div class="table-wrapper">
+              <table class="table-dark-custom">
+                <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Channel</th>
+                  <th>Amount</th>
+                  <th>Reference</th>
+                  <th>Status</th>
+                  <th style="width: 110px;">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>2025-03-13 14:12</td>
+                  <td>MTN MoMo</td>
+                  <td>25,000 XAF</td>
+                  <td>MOMO-20250313-9988</td>
+                  <td><span class="badge-status success">Completed</span></td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-icon" title="View details">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2025-03-13 13:50</td>
+                  <td>Orange Money</td>
+                  <td>25,000 XAF</td>
+                  <td>OM-20250313-7744</td>
+                  <td><span class="badge-status pending">Pending</span></td>
+                  <td>
+                    <div class="table-actions">
+                      <button
+                        class="btn-icon"
+                        title="Verify"
+                        data-bs-toggle="modal"
+                        data-bs-target="#paymentDecisionModal"
+                        data-decision="verify"
+                      >
+                        <i class="bi bi-check2"></i>
+                      </button>
+                      <button
+                        class="btn-icon"
+                        title="Reject"
+                        data-bs-toggle="modal"
+                        data-bs-target="#paymentDecisionModal"
+                        data-decision="reject"
+                      >
+                        <i class="bi bi-x"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2025-02-10 18:05</td>
+                  <td>MTN MoMo</td>
+                  <td>25,000 XAF</td>
+                  <td>MOMO-20250210-1122</td>
+                  <td><span class="badge-status failed">Failed</span></td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-icon"><i class="bi bi-eye"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SUPPORT TAB -->
+          <div class="tab-pane fade" id="support" role="tabpanel" aria-labelledby="support-tab">
+            <div class="support-layout">
+              <div>
+                <div class="overview-title">Tickets for this household</div>
+                <div class="support-list">
+                  <div class="ticket-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="ticket-subject">Slow connection in evenings</span>
+                      <span class="ticket-status-chip open">Open</span>
+                    </div>
+                    <div class="ticket-meta">
+                      #4521 · Last reply 5 min ago · Assigned to: NOC Agent
+                    </div>
+                  </div>
+                  <div class="ticket-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="ticket-subject">Billing clarification</span>
+                      <span class="ticket-status-chip closed">Closed</span>
+                    </div>
+                    <div class="ticket-meta">
+                      #4402 · Closed 2 days ago · Resolved by: Billing Admin
+                    </div>
+                  </div>
+                  <div class="ticket-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="ticket-subject">Router offline</span>
+                      <span class="ticket-status-chip closed">Closed</span>
+                    </div>
+                    <div class="ticket-meta">
+                      #4301 · Closed 1 week ago
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="overview-title">Quick reply / new ticket</div>
+                <div class="support-compose">
+                  <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm" id="supportType">
+                      <option value="reply" selected>Reply on existing ticket</option>
+                      <option value="new">Open new ticket</option>
+                    </select>
+                    <select class="form-select form-select-sm" id="supportStatus">
+                      <option value="open">Set status: Open</option>
+                      <option value="pending">Set status: Pending</option>
+                      <option value="closed">Set status: Closed</option>
+                    </select>
+                  </div>
+                  <textarea id="supportMessage" placeholder="Type your reply or new ticket description…"></textarea>
+                  <button class="btn-send-reply" type="button" id="sendSupportBtn">
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AUDIT TAB -->
+          <div class="tab-pane fade" id="audit" role="tabpanel" aria-labelledby="audit-tab">
+            <p class="audit-footnote">
+              All admin actions on this household, including subscription changes,
+              payment decisions and PIN resets.
+            </p>
+            <div class="table-wrapper">
+              <table class="table-dark-custom">
+                <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Actor</th>
+                  <th>Action</th>
+                  <th>Entity</th>
+                  <th>Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>2025-03-13 14:12</td>
+                  <td>Elisbrown</td>
+                  <td>Subscription renewed</td>
+                  <td>subscription</td>
+                  <td>Period 22 Feb–22 Mar 2025, 25,000 XAF</td>
+                </tr>
+                <tr>
+                  <td>2025-03-10 09:02</td>
+                  <td>Billing Admin</td>
+                  <td>Payment verified</td>
+                  <td>payment</td>
+                  <td>Ref MOMO-20250310-4411</td>
+                </tr>
+                <tr>
+                  <td>2025-02-10 18:06</td>
+                  <td>NOC Agent</td>
+                  <td>Ticket closed</td>
+                  <td>ticket</td>
+                  <td>#4301 Router offline</td>
+                </tr>
+                <tr>
+                  <td>2025-01-15 12:30</td>
+                  <td>System</td>
+                  <td>Household created</td>
+                  <td>household</td>
+                  <td>Default PIN set to 1234</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Subscription Action Modal -->
+<div class="modal fade modal-dark" id="subscriptionActionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="subActionTitle">Subscription Action</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="subscriptionActionForm">
+        <div class="modal-body">
+          <p class="sub-summary" id="subActionDescription">
+            Configure the subscription dates and details for this household.
+          </p>
+
+          <div class="row g-3" id="subActionDatesRow">
+            <div class="col-md-6">
+              <label class="form-label" for="subStartDate">Start date</label>
+              <input type="date" class="form-control" id="subStartDate" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="subEndDate">End date</label>
+              <input type="date" class="form-control" id="subEndDate" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1" id="subPauseFields" style="display:none;">
+            <div class="col-md-6">
+              <label class="form-label" for="pauseReason">Pause reason</label>
+              <input type="text" class="form-control" id="pauseReason" placeholder="e.g. travelling, maintenance">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pauseNote">Internal note (optional)</label>
+              <input type="text" class="form-control" id="pauseNote" placeholder="Visible only to admins">
+            </div>
+          </div>
+
+          <input type="hidden" id="subActionType" value="activate">
+
+          <p class="modal-footnote mb-0">
+            This action will be logged in the audit trail with your admin identity and timestamp.
+          </p>
+        </div>
+        <div class="modal-footer border-0 d-flex justify-content-between">
+          <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary-compact">
+            Confirm action
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Payment Decision Modal -->
+<div class="modal fade modal-dark" id="paymentDecisionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentDecisionTitle">Payment decision</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="paymentDecisionForm">
+        <div class="modal-body">
+          <p class="sub-summary" id="paymentDecisionText">
+            Confirm how you want to handle this pending payment.
+          </p>
+          <div class="mb-3">
+            <label class="form-label" for="paymentNote">Internal note (optional)</label>
+            <textarea class="form-control" id="paymentNote" rows="2" placeholder="e.g. Confirmed on MTN portal, customer notified."></textarea>
+          </div>
+          <input type="hidden" id="paymentDecisionType" value="verify">
+        </div>
+        <div class="modal-footer border-0 justify-content-between">
+          <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary-compact" id="paymentDecisionSubmitBtn">
+            Confirm
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Reset PIN Modal -->
+<div class="modal fade modal-dark" id="resetPinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-danger">Reset PIN to 1234</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          You are about to reset this subscriber’s login PIN back to
+          <strong>1234</strong>. On their next login, they will be forced to
+          change it (<code>has_changed_default_pin = 0</code>).
+        </p>
+        <p class="audit-footnote mb-0">
+          This action will be recorded in the audit trail. Make sure you have
+          verified the subscriber’s identity before proceeding.
+        </p>
+      </div>
+      <div class="modal-footer border-0 justify-content-between">
+        <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn-danger-compact" id="confirmResetPinBtn">
+          Yes, reset PIN
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api-client.js"></script>
+<script>
+  // Enforce admin authentication
+  if (!api.isAuthenticated()) {
+    window.location.href = '/admin/login.html';
+  }
+
+  // Sidebar toggle on mobile
+  const sidebar = document.getElementById('adminSidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const shell = document.querySelector('.admin-shell');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+      shell.classList.toggle('sidebar-open');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      }
+    });
+
+    // Close sidebar on link click
+    const navLinks = sidebar.querySelectorAll('.admin-nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      });
+    });
+  }
+
+  // Subscription action modal logic
+  const subModalEl = document.getElementById('subscriptionActionModal');
+  if (subModalEl) {
+    subModalEl.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      if (!button) return;
+      const action = button.getAttribute('data-action') || 'activate';
+      const titleEl = document.getElementById('subActionTitle');
+      const descEl = document.getElementById('subActionDescription');
+      const actionTypeInput = document.getElementById('subActionType');
+      const pauseFields = document.getElementById('subPauseFields');
+
+      actionTypeInput.value = action;
+      pauseFields.style.display = (action === 'pause') ? 'flex' : 'none';
+
+      if (action === 'activate') {
+        titleEl.textContent = 'Activate subscription';
+        descEl.textContent = 'Set the start and end date for the new active subscription.';
+      } else if (action === 'renew') {
+        titleEl.textContent = 'Renew subscription';
+        descEl.textContent = 'Extend the subscription by setting a new period.';
+      } else if (action === 'pause') {
+        titleEl.textContent = 'Pause subscription';
+        descEl.textContent = 'Temporarily pause the subscription and provide a reason.';
+      } else if (action === 'extend') {
+        titleEl.textContent = 'Extend subscription';
+        descEl.textContent = 'Adjust the end date to extend this subscription period.';
+      }
+    });
+
+    document.getElementById('subscriptionActionForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const payload = {
+        action: document.getElementById('subActionType').value,
+        start_date: document.getElementById('subStartDate').value,
+        end_date: document.getElementById('subEndDate').value,
+        pause_reason: document.getElementById('pauseReason').value.trim(),
+        pause_note: document.getElementById('pauseNote').value.trim()
+      };
+      console.log('Subscription action payload:', payload);
+      // TODO: send to backend
+
+      bootstrap.Modal.getInstance(subModalEl).hide();
+    });
+  }
+
+  // Payment decision modal logic
+  const paymentModalEl = document.getElementById('paymentDecisionModal');
+  if (paymentModalEl) {
+    paymentModalEl.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      if (!button) return;
+      const decision = button.getAttribute('data-decision') || 'verify';
+      const titleEl = document.getElementById('paymentDecisionTitle');
+      const textEl = document.getElementById('paymentDecisionText');
+      const typeInput = document.getElementById('paymentDecisionType');
+      const submitBtn = document.getElementById('paymentDecisionSubmitBtn');
+
+      typeInput.value = decision;
+      if (decision === 'verify') {
+        titleEl.textContent = 'Verify payment';
+        textEl.textContent = 'Mark this payment as successfully received and apply the subscription if relevant.';
+        submitBtn.textContent = 'Verify payment';
+        submitBtn.classList.remove('btn-danger-compact');
+        submitBtn.classList.add('btn-primary-compact');
+      } else {
+        titleEl.textContent = 'Reject payment';
+        textEl.textContent = 'Mark this payment as rejected / failed. The subscription will not be activated.';
+        submitBtn.textContent = 'Reject payment';
+        submitBtn.classList.remove('btn-primary-compact');
+        submitBtn.classList.add('btn-danger-compact');
+      }
+    });
+
+    document.getElementById('paymentDecisionForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const payload = {
+        decision: document.getElementById('paymentDecisionType').value,
+        note: document.getElementById('paymentNote').value.trim()
+      };
+      console.log('Payment decision payload:', payload);
+      // TODO: send to backend
+
+      bootstrap.Modal.getInstance(paymentModalEl).hide();
+    });
+  }
+
+  // Support quick reply / new ticket stub
+  document.getElementById('sendSupportBtn').addEventListener('click', function () {
+    const mode = document.getElementById('supportType').value;
+    const status = document.getElementById('supportStatus').value;
+    const message = document.getElementById('supportMessage').value.trim();
+
+    if (!message) {
+      alert('Please enter a message before sending.');
+      return;
+    }
+
+    const payload = {
+      mode,   // 'reply' or 'new'
+      status, // open/pending/closed
+      message
+    };
+    console.log('Support payload:', payload);
+    // TODO: send to backend
+
+    document.getElementById('supportMessage').value = '';
+  });
+
+  // Reset PIN stub
+  document.getElementById('confirmResetPinBtn').addEventListener('click', function () {
+    const payload = {
+      action: 'reset_pin_to_default',
+      new_pin: '1234',
+      has_changed_default_pin: 0
+    };
+    console.log('Reset PIN payload:', payload);
+    // TODO: call backend
+
+    bootstrap.Modal.getInstance(document.getElementById('resetPinModal')).hide();
+  });
+</script>
+<script src="/pwa-init.js"></script>
+
+</body>
+</html>

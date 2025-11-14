@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>GPS Tracker — Map + Breadcrumbs + 200ms Toggle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap 5 (CSS) — no SRI -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Leaflet (CSS) — no SRI -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <!-- DataTables (Bootstrap 5 + Responsive CSS) — no SRI -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+  <style>
+    html,body{height:100%}
+    body{background:#f6f8fb;}
+    .card{border-radius:16px;box-shadow:0 12px 28px rgba(15,23,42,.08);}
+    #map{width:100%;height:50vh;min-height:320px;border-radius:12px;border:1px solid #e5e7eb;background:#e9ecef;}
+    @media (min-width:992px){ #map{height:60vh;} }
+    a.table-link{text-decoration:none;}
+    a.table-link:hover{text-decoration:underline;}
+    .badge-status{background:#eef2ff;color:#1e293b;}
+    #tableWrap{max-height:60vh;overflow:auto;border:1px solid #e5e7eb;border-radius:12px;background:#fff;}
+  </style>
+</head>
+<body class="py-3">
+<div class="container">
+  <div class="card p-3 p-md-4">
+    <!-- Row: Title + Buttons -->
+    <div class="row g-3 align-items-center">
+      <div class="col-12 col-lg-6">
+        <h1 class="h4 mb-0">GPS Tracker — Map + Breadcrumbs</h1>
+        <p class="text-muted mb-0">Use HTTPS or <code>http://localhost</code>. Allow location access.</p>
+        <div id="secureNotice" class="alert alert-warning py-1 px-2 mt-2 d-none" role="alert" style="font-size:90%">
+          Geolocation requires a secure context (HTTPS) — serving over <code>localhost</code> is allowed. You can also use the <strong>Simulate</strong> controls to test without a device.
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 d-flex gap-2 justify-content-lg-end">
+        <button id="startBtn" class="btn btn-primary">Start</button>
+        <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
+        <button id="exportBtn" class="btn btn-outline-dark" disabled>Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Row: Toggles + Status -->
+    <div class="row g-3 mt-2">
+      <div class="col-12 col-md-6">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="fastMode">
+          <label class="form-check-label" for="fastMode">Enable High-Frequency (200 ms) Mode</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="simulateMode">
+          <label class="form-check-label" for="simulateMode">Simulate location (for testing)</label>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 d-flex align-items-center">
+        <button id="simulateNow" class="btn btn-sm btn-outline-secondary">Simulate once</button>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="small text-muted">Status</div>
+        <div><span id="statusBadge" class="badge rounded-pill badge-status">idle</span></div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="small text-muted">Samples</div>
+        <div id="count">0</div>
+      </div>
+    </div>
+
+    <!-- Row: Live Stats + Map -->
+    <div class="row g-3 mt-1">
+      <div class="col-12 col-lg-6">
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="small text-muted">Last timestamp</div><div id="ts">—</div>
+          </div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Latitude</div><div id="lat">—</div></div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Longitude</div><div id="lon">—</div></div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Accuracy (m)</div><div id="acc">—</div></div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Speed (m/s)</div><div id="spd">—</div></div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Heading (°)</div><div id="hdg">—</div></div>
+          <div class="col-6 col-md-4"><div class="small text-muted">Altitude (m)</div><div id="alt">—</div></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div id="map" class="w-100"></div>
+      </div>
+    </div>
+
+    <!-- Row: Log Table -->
+    <div class="row g-3 mt-3">
+      <div class="col-12">
+        <div id="tableWrap" class="table-responsive p-2">
+          <table id="logTable" class="table table-striped table-hover align-middle nowrap" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Time (ISO)</th>
+                <th>Lat</th>
+                <th>Lon</th>
+                <th>Acc (m)</th>
+                <th>Speed (m/s)</th>
+                <th>Heading (°)</th>
+                <th>Alt (m)</th>
+                <th>Link</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="form-text">Auto-scroll keeps the newest entries visible when 200 ms mode is ON.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS libs — no SRI; keep order: jQuery → Bootstrap JS → Leaflet → DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // ---- DataTables (guarded)
+  let dt = null;
+  try {
+    if (window.jQuery && $.fn && $.fn.DataTable) {
+      dt = $('#logTable').DataTable({
+        order: [[0, 'desc']], pageLength: 25, responsive: true,
+        columns: [
+          { title:'#' }, { title:'Time (ISO)' }, { title:'Lat' }, { title:'Lon' },
+          { title:'Acc (m)' }, { title:'Speed (m/s)' }, { title:'Heading (°)' }, { title:'Alt (m)' },
+          { title:'Link', orderable:false, searchable:false }, { title:'Source' }
+        ]
+      });
+    } else {
+      console.warn('DataTables not available; falling back to basic table rendering');
+    }
+  } catch (e) {
+    console.warn('Failed to initialize DataTables', e);
+    dt = null;
+  }
+
+  // ---- Map (guarded)
+  let map = null;
+  let line = null;
+  let marker = null;
+  const path = [];
+  try {
+    if (typeof L !== 'undefined') {
+      map = L.map('map', { zoomControl: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+      // size & first view
+      setTimeout(() => { try { map.setView([0,0], 2); map.invalidateSize(); } catch(e){} }, 0);
+      line = L.polyline(path, { weight: 4, color: '#0b6efd' }).addTo(map);
+    } else {
+      const mapEl = document.getElementById('map');
+      if (mapEl) mapEl.innerHTML = '<div class="p-3 text-muted">Map library not loaded</div>';
+      console.warn('Leaflet (L) not found — map disabled');
+    }
+  } catch (e) {
+    console.warn('Failed to initialize Leaflet map', e);
+    const mapEl = document.getElementById('map');
+    if (mapEl) mapEl.innerHTML = '<div class="p-3 text-muted">Map failed to initialize</div>';
+  }
+
+  // ---- DOM
+  const byId = id => document.getElementById(id);
+  const startBtn = byId("startBtn"), stopBtn = byId("stopBtn"), exportBtn = byId("exportBtn");
+  const fastModeEl = byId("fastMode");
+  const simulateEl = byId("simulateMode"), simulateBtn = byId("simulateNow");
+  const statusBadge = byId("statusBadge");
+  const tsEl=byId("ts"), latEl=byId("lat"), lonEl=byId("lon"), accEl=byId("acc"), spdEl=byId("spd"), hdgEl=byId("hdg"), altEl=byId("alt"), cntEl=byId("count");
+  const tableWrap = byId("tableWrap");
+
+  // ---- State
+  let samples = 0;
+  let watchId = null;
+  let timer = null; // 200 ms polling
+  const csvRows = ["index,timestamp,lat,lon,accuracy_m,speed_ms,heading_deg,alt_m,link,source"];
+
+  // ---- Utils
+  const fmt = (v, d=2) => (v!=null && !Number.isNaN(+v)) ? (+v).toFixed(d) : "";
+  const gmaps = (a,b) => `https://www.google.com/maps?q=${a},${b}`;
+  function setStatus(t, ok=true){
+    statusBadge.textContent = t;
+    // Toggle Bootstrap 5 utility classes for clear success / error visual
+    statusBadge.classList.toggle('text-bg-danger', !ok);
+    statusBadge.classList.toggle('text-bg-success', ok);
+  }
+
+  // Simulation helpers (useful for testing without a secure context or a GPS device)
+  let simTimer = null;
+  let simIndex = 0;
+  const simCenter = { lat: 37.7749, lon: -122.4194 }; // San Francisco by default
+  function makeSimPosition(){
+    const jitter = 0.0005;
+    const lat = simCenter.lat + Math.sin(simIndex/10) * 0.001 + (Math.random()-0.5)*jitter;
+    const lon = simCenter.lon + Math.cos(simIndex/10) * 0.001 + (Math.random()-0.5)*jitter;
+    simIndex++;
+    return {
+      coords: {
+        latitude: lat,
+        longitude: lon,
+        accuracy: 3 + Math.random()*4,
+        speed: Math.random()*2,
+        heading: Math.random()*360,
+        altitude: 5 + Math.random()*8
+      },
+      timestamp: Date.now()
+    };
+  }
+
+  function startSimulation(){
+    if (simTimer) return;
+    const interval = fastModeEl.checked ? 200 : 1000;
+    simTimer = setInterval(() => { handleFix(makeSimPosition(), 'simulate'); }, interval);
+    setStatus('simulating', true);
+  }
+  function stopSimulation(){ if (simTimer) { clearInterval(simTimer); simTimer = null; } }
+
+  function updatePanels(ts, lat, lon, acc, spd, hdg, alt){
+    tsEl.textContent = ts ?? "—";
+    latEl.textContent = lat ?? "—";
+    lonEl.textContent = lon ?? "—";
+    accEl.textContent = acc ?? "—";
+    spdEl.textContent = spd ?? "—";
+    hdgEl.textContent = hdg ?? "—";
+    altEl.textContent = alt ?? "—";
+  }
+
+  function addRow(ts, lat, lon, acc, spd, hdg, alt, src){
+    samples++; cntEl.textContent = String(samples);
+
+    const linkHtml = (lat!=null && lon!=null) ? `<a class="table-link" href="${gmaps(lat,lon)}" target="_blank" rel="noopener">Open</a>` : "";
+    if (dt) {
+      dt.row.add([samples, ts, fmt(lat,6), fmt(lon,6), fmt(acc,2), fmt(spd,2), fmt(hdg,1), fmt(alt,2), linkHtml, src]).draw(false);
+      // Auto-scroll to newest (newest rows are on first page)
+      if (fastModeEl && fastModeEl.checked && typeof dt.page === 'function') {
+        dt.page('first').draw('page');
+        if (tableWrap) tableWrap.scrollTop = 0;
+      }
+    } else {
+      // Fallback: append a simple row to tbody
+      try {
+        const row = `<tr><td>${samples}</td><td>${ts}</td><td>${fmt(lat,6)}</td><td>${fmt(lon,6)}</td><td>${fmt(acc,2)}</td><td>${fmt(spd,2)}</td><td>${fmt(hdg,1)}</td><td>${fmt(alt,2)}</td><td>${linkHtml}</td><td>${src}</td></tr>`;
+        const tbody = document.querySelector('#logTable tbody');
+        if (tbody) tbody.insertAdjacentHTML('afterbegin', row);
+      } catch(e) { console.warn('Failed to append row fallback', e); }
+    }
+
+    const link = (lat!=null && lon!=null) ? gmaps(lat,lon) : "";
+    csvRows.push([samples, ts, lat ?? "", lon ?? "", acc ?? "", spd ?? "", hdg ?? "", alt ?? "", link, src].join(","));
+
+    if (lat!=null && lon!=null && typeof L !== 'undefined' && map) {
+      const ll = L.latLng(lat, lon);
+      path.push(ll);
+      if (line && typeof line.setLatLngs === 'function') line.setLatLngs(path);
+      if (!marker && map) marker = L.marker(ll, { title: "Current position" }).addTo(map);
+      else if (marker) marker.setLatLng(ll);
+      if (path.length > 1 && map && line && typeof line.getBounds === 'function') map.fitBounds(line.getBounds().pad(0.15), { animate: true });
+      else if (map) map.setView(ll, 16, { animate: true });
+    }
+
+    updatePanels(ts, lat, lon, acc, spd, hdg, alt);
+  }
+
+  function handleFix(pos, src){
+    const c = pos.coords;
+    const ts = new Date(pos.timestamp).toISOString();
+    addRow(ts, c.latitude, c.longitude, c.accuracy, c.speed, c.heading, c.altitude, src);
+    setStatus(fastModeEl.checked ? '200ms polling' : 'watching');
+  }
+
+  function handleError(err, src){
+    const ts = new Date().toISOString();
+    addRow(ts, null, null, null, null, null, null, `error:${src}`);
+    setStatus(`error:${src}`, false);
+    console.warn('Geolocation error', src, err);
+  }
+
+  function poll(){
+    navigator.geolocation.getCurrentPosition(
+      pos => handleFix(pos, "getCurrentPosition"),
+      err => handleError(err, "getCurrentPosition"),
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  }
+
+  function start(){
+    if (!("geolocation" in navigator) && !simulateEl.checked) { alert("Geolocation not supported."); return; }
+
+    // Reset
+    samples = 0; cntEl.textContent = "0";
+    csvRows.length = 1; // keep header
+    dt.clear().draw();
+    path.length = 0; line.setLatLngs(path);
+    if (marker) { map.removeLayer(marker); marker = null; }
+    map.setView([0,0], 2);
+    setTimeout(() => map.invalidateSize(), 0);
+    updatePanels("—","—","—","—","—","—","—");
+
+    // If simulate mode is enabled, run the simulation loop instead of real geolocation
+    if (simulateEl.checked) {
+      stop(); // clear any existing watches/timers
+      startSimulation();
+    } else {
+      // Baseline watch (logs only when 200ms mode is OFF)
+      watchId = navigator.geolocation.watchPosition(
+        pos => { if (!fastModeEl.checked) handleFix(pos, "watchPosition"); },
+        err => handleError(err, "watchPosition"),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+
+      // Optional 200 ms polling
+      if (fastModeEl.checked) {
+        timer = setInterval(poll, 200);
+        setStatus('starting 200ms…');
+      } else {
+        setStatus('requesting…');
+      }
+    }
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    exportBtn.disabled = false;
+  }
+
+  function stop(){
+    if (watchId) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    if (timer) { clearInterval(timer); timer = null; }
+    stopSimulation();
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    setStatus('stopped');
+  }
+
+  function exportCSV(){
+    const blob = new Blob([csvRows.join("\n")], { type:"text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gps_log.csv";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+  }
+
+  // Wire up
+  startBtn.addEventListener("click", start);
+  stopBtn.addEventListener("click", stop);
+  exportBtn.addEventListener("click", exportCSV);
+  if (simulateBtn) simulateBtn.addEventListener('click', () => { handleFix(makeSimPosition(), 'simulate'); });
+  window.addEventListener("beforeunload", stop);
+
+  // Resize fix (orientation changes etc.)
+  window.addEventListener('resize', () => { try { if (map) map.invalidateSize(); } catch(e){} });
+
+  // Show a helpful notice when not served over HTTPS (but geolocation exists) — localhost is allowed
+  try {
+    if ('geolocation' in navigator && location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      const el = document.getElementById('secureNotice'); if (el) el.classList.remove('d-none');
+    }
+  } catch(e) { /* ignore in non-browser test env */ }
+});
+</script>
+</body>
+</html>

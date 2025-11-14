@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Admin FAQs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --flex-green-soft: #b9f7cf;
+      --bg-sidebar: #000000;
+      --border-subtle: #222222;
+      --text-muted: #a5a5a5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid #141414;
+      padding: 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .admin-sidebar-logo-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--flex-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+
+    .admin-sidebar-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1.1;
+    }
+
+    .admin-sidebar-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.8rem;
+      flex: 1;
+    }
+
+    .admin-nav-item + .admin-nav-item {
+      margin-top: 0.2rem;
+    }
+
+    .admin-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 999px;
+      color: #fdfdfd;
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .admin-nav-link i {
+      font-size: 1rem;
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    .admin-nav-link:hover {
+      background: #111111;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active {
+      background: var(--flex-green);
+      color: #000000;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active i {
+      color: #000000;
+    }
+
+    .admin-sidebar-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* MAIN */
+    .admin-main {
+      flex: 1;
+      background: radial-gradient(circle at top, #151515 0, #050505 45%, #000 100%);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* TOPBAR */
+    .admin-topbar {
+      padding: 1rem 1.7rem 0.8rem;
+      border-bottom: 1px solid #151515;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .topbar-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .topbar-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topbar-hamburger {
+      display: none;
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 1.4rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .topbar-search {
+      position: relative;
+      min-width: 220px;
+      max-width: 260px;
+      flex: 1 1 auto;
+    }
+
+    .topbar-search input {
+      width: 100%;
+      background: #070707;
+      border-radius: 999px;
+      border: 1px solid #222222;
+      padding: 0.5rem 2.1rem 0.5rem 0.9rem;
+      color: #ffffff;
+      font-size: 0.86rem;
+    }
+
+    .topbar-search input::placeholder {
+      color: #555555;
+    }
+
+    .topbar-search input:focus {
+      outline: none;
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.25);
+    }
+
+    .topbar-search i {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: #666666;
+    }
+
+    .topbar-admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+      border-radius: 999px;
+      background: #050505;
+      border: 1px solid #222222;
+    }
+
+    .topbar-admin-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #333333;
+    }
+
+    .topbar-admin-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .topbar-admin-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .topbar-admin-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .topbar-admin-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-lang-badge {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid #333333;
+      color: #cccccc;
+      white-space: nowrap;
+    }
+
+    /* CONTENT */
+    .admin-content {
+      padding: 1.4rem 1.7rem 2rem;
+      max-width: 1440px;
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    .page-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-header-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .page-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .page-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-new-faq {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000000;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn-new-faq:hover {
+      background: #37f17a;
+    }
+
+    .btn-export {
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f2f2f2;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-export:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* FILTER BAR */
+    .filter-bar {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 0.8rem 0.9rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .filter-row > *:not(.filter-actions) {
+      flex: 1 1 200px;
+      min-width: 150px;
+    }
+
+    .filter-row .form-control,
+    .filter-row .form-select {
+      font-size: 0.82rem;
+      background: #050505;
+      color: #ffffff;
+      border: 1px solid #333333;
+      border-radius: 999px;
+      padding-inline: 0.8rem;
+      width: 100%;
+    }
+
+    .filter-row .form-control::placeholder {
+      color: #666;
+    }
+
+    .filter-row .form-control:focus,
+    .filter-row .form-select:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+      flex: 0 0 auto;
+    }
+
+    .btn-filter-apply {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000000;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1rem;
+      white-space: nowrap;
+    }
+
+    .btn-filter-reset {
+      border-radius: 999px;
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid #333333;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.9rem;
+      white-space: nowrap;
+    }
+
+    .btn-filter-apply:hover {
+      background: #37f17a;
+    }
+
+    /* TABLE CARD */
+    .content-card {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .content-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .content-card-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .content-card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .table-wrapper {
+      margin-top: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid #202020;
+      overflow: auto;
+      max-height: 520px;
+    }
+
+    .table-dark-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .table-dark-custom thead {
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-dark-custom th,
+    .table-dark-custom td {
+      padding: 0.55rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .table-dark-custom tbody tr:nth-child(even) {
+      background: #060606;
+    }
+
+    .badge-status {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+    }
+
+    .badge-status.active {
+      background: rgba(39, 228, 106, 0.16);
+      color: var(--flex-green);
+    }
+
+    .badge-status.inactive {
+      background: rgba(108,117,125,0.16);
+      color: #adb5bd;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f1f1f1;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* MODAL */
+    .modal-dark .modal-content {
+      background: #050505;
+      color: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #333333;
+    }
+
+    .modal-dark .modal-header {
+      border-bottom: 1px solid #222222;
+    }
+
+    .modal-dark .btn-close {
+      filter: invert(1);
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      color: #e0e0e0;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 0.85rem;
+      background: #050505;
+      color: #ffffff;
+      border: 1px solid #333333;
+      border-radius: 10px;
+    }
+
+    .form-control::placeholder {
+      color: #666666;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .btn-primary-compact {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000000;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-danger-compact {
+      border-radius: 999px;
+      background: #ff4b5c;
+      color: #ffffff;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-primary-compact:hover { background: #37f17a; }
+    .btn-danger-compact:hover { background: #ff263f; }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      .admin-shell.sidebar-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+      }
+
+      .admin-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1030;
+        overflow-y: auto;
+        border-right: 1px solid #141414;
+      }
+      .admin-sidebar.open { transform: translateX(0); }
+      .topbar-hamburger { 
+        display: inline-block;
+        cursor: pointer;
+        padding: 0.5rem;
+        margin: -0.5rem;
+      }
+      .topbar-hamburger:hover { opacity: 0.8; }
+      .topbar-subtitle { max-width: 220px; }
+    }
+
+    @media (max-width: 768px) {
+      .admin-topbar,
+      .admin-content {
+        padding-inline: 1.1rem;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-row > *:not(.filter-actions) {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .filter-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .content-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .topbar-search { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo-circle">
+        <img src="../flexnet-logo.svg" alt="Flexnet logo" class="logo-mark">
+      </div>
+      <div>
+        <div class="admin-sidebar-title">Flexnet</div>
+        <div class="admin-sidebar-sub">Admin panel</div>
+      </div>
+    </div>
+
+    <ul class="admin-nav">
+      <li class="admin-nav-item">
+        <a href="dashboard.html" class="admin-nav-link">
+          <i class="bi bi-grid-1x2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="locations.html" class="admin-nav-link">
+          <i class="bi bi-building"></i>
+          <span>Locations</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="payments.html" class="admin-nav-link">
+          <i class="bi bi-cash-coin"></i>
+          <span>Payments</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="support.html" class="admin-nav-link">
+          <i class="bi bi-life-preserver"></i>
+          <span>Support</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="faqs.html" class="admin-nav-link active">
+          <i class="bi bi-question-circle"></i>
+          <span>FAQs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="admins.html" class="admin-nav-link">
+          <i class="bi bi-people"></i>
+          <span>Admins &amp; Roles</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="logs.html" class="admin-nav-link">
+          <i class="bi bi-activity"></i>
+          <span>System Logs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="profile.html" class="admin-nav-link">
+          <i class="bi bi-person-gear"></i>
+          <span>My Profile</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-sidebar-footer">
+      v1.0 · FAQ changes are logged.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <!-- TOPBAR -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button class="topbar-hamburger" id="sidebarToggle" type="button">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <div class="topbar-title">FAQs</div>
+          <div class="topbar-subtitle">
+            Manage English &amp; French FAQs displayed in the user Settings screen.
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <input type="text" id="topSearch" placeholder="Search FAQs…">
+          <i class="bi bi-search"></i>
+        </div>
+        <span class="topbar-lang-badge">EN/FR • Light</span>
+        <div class="topbar-admin-pill">
+          <div class="topbar-admin-avatar">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400"
+                 alt="Admin avatar">
+          </div>
+          <div class="topbar-admin-meta">
+            <span class="topbar-admin-name">Elisbrown</span>
+            <span class="topbar-admin-role">Billing Admin</span>
+          </div>
+          <i class="bi bi-chevron-down" style="font-size: 0.8rem; color:#777;"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+      <!-- Page header -->
+      <div class="page-header-row">
+        <div class="page-header-main">
+          <div class="page-title">FAQ library</div>
+          <div class="page-subtitle">
+            Centralised list of questions &amp; answers in English and French.
+          </div>
+        </div>
+
+        <div class="page-header-actions">
+          <button
+            class="btn-new-faq"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#faqModal"
+            data-mode="create"
+          >
+            <i class="bi bi-plus-lg"></i>
+            New FAQ
+          </button>
+          <button class="btn-export" type="button">
+            <i class="bi bi-download"></i>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <section class="filter-bar">
+        <div class="filter-row">
+          <input
+            type="text"
+            id="faqSearch"
+            class="form-control"
+            placeholder="Search question / slug…"
+          >
+
+          <select id="faqLangFilter" class="form-select">
+            <option value="">All languages</option>
+            <option value="en">English only</option>
+            <option value="fr">French only</option>
+          </select>
+
+          <select id="faqStatusFilter" class="form-select">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+
+          <div class="filter-actions">
+            <button class="btn-filter-apply" type="button" id="applyFaqFilters">
+              Apply
+            </button>
+            <button class="btn-filter-reset" type="button" id="resetFaqFilters">
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Table -->
+      <section class="content-card">
+        <div class="content-card-header">
+          <div>
+            <div class="content-card-title">FAQ list</div>
+            <div class="content-card-subtitle">
+              Question titles are shown in both EN and FR; click edit to modify.
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table-dark-custom" id="faqsTable">
+            <thead>
+            <tr>
+              <th>Question (EN)</th>
+              <th>Question (FR)</th>
+              <th>Slug</th>
+              <th>Updated at</th>
+              <th>Status</th>
+              <th style="width:90px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+              data-id="1"
+              data-q-en="How do I renew my subscription?"
+              data-q-fr="Comment renouveler mon abonnement ?"
+              data-a-en="You can renew via the Billing tab in the Flexnet app or at the reception."
+              data-a-fr="Vous pouvez renouveler via l'onglet Facturation dans l'application Flexnet ou à la réception."
+              data-slug="renew-subscription"
+              data-status="active"
+            >
+              <td>How do I renew my subscription?</td>
+              <td>Comment renouveler mon abonnement ?</td>
+              <td>renew-subscription</td>
+              <td>2025-03-10 14:20</td>
+              <td><span class="badge-status active">Active</span></td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit FAQ"
+                    data-bs-toggle="modal"
+                    data-bs-target="#faqModal"
+                    data-mode="edit"
+                    data-row-id="1"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr
+              data-id="2"
+              data-q-en="What happens if my payment fails?"
+              data-q-fr="Que se passe-t-il si mon paiement échoue ?"
+              data-a-en="Your connection may be paused until payment is confirmed. You will receive a notification with steps to retry."
+              data-a-fr="Votre connexion peut être suspendue jusqu'à la confirmation du paiement. Vous recevrez une notification avec les étapes pour réessayer."
+              data-slug="payment-failed"
+              data-status="active"
+            >
+              <td>What happens if my payment fails?</td>
+              <td>Que se passe-t-il si mon paiement échoue ?</td>
+              <td>payment-failed</td>
+              <td>2025-03-11 09:05</td>
+              <td><span class="badge-status active">Active</span></td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit FAQ"
+                    data-bs-toggle="modal"
+                    data-bs-target="#faqModal"
+                    data-mode="edit"
+                    data-row-id="2"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr
+              data-id="3"
+              data-q-en="Can I pause my subscription when travelling?"
+              data-q-fr="Puis-je suspendre mon abonnement lorsque je voyage ?"
+              data-a-en="Yes, contact support or your building manager to request a pause with dates."
+              data-a-fr="Oui, contactez le support ou votre gestionnaire d'immeuble pour demander une suspension avec les dates."
+              data-slug="pause-subscription"
+              data-status="inactive"
+            >
+              <td>Can I pause my subscription when travelling?</td>
+              <td>Puis-je suspendre mon abonnement lorsque je voyage ?</td>
+              <td>pause-subscription</td>
+              <td>2025-02-28 17:40</td>
+              <td><span class="badge-status inactive">Inactive</span></td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit FAQ"
+                    data-bs-toggle="modal"
+                    data-bs-target="#faqModal"
+                    data-mode="edit"
+                    data-row-id="3"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- FAQ create/edit modal -->
+<div class="modal fade modal-dark" id="faqModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="faqModalTitle">New FAQ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="faqForm">
+          <input type="hidden" id="faqId">
+
+          <div class="mb-3">
+            <label for="faqQuestionEn" class="form-label">Question (English)</label>
+            <input
+              type="text"
+              id="faqQuestionEn"
+              class="form-control"
+              placeholder="e.g. How do I renew my subscription?"
+              required
+            >
+          </div>
+
+          <div class="mb-3">
+            <label for="faqQuestionFr" class="form-label">Question (Français)</label>
+            <input
+              type="text"
+              id="faqQuestionFr"
+              class="form-control"
+              placeholder="ex. Comment renouveler mon abonnement ?"
+              required
+            >
+          </div>
+
+          <div class="mb-3 row g-3">
+            <div class="col-md-6">
+              <label for="faqSlug" class="form-label">
+                Slug
+                <small class="text-muted">(auto from EN, editable)</small>
+              </label>
+              <input
+                type="text"
+                id="faqSlug"
+                class="form-control"
+                placeholder="renew-subscription"
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="faqStatus" class="form-label">Status</label>
+              <select id="faqStatus" class="form-select">
+                <option value="active">Active (visible)</option>
+                <option value="inactive">Inactive (hidden)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="faqAnswerEn" class="form-label">Answer (English)</label>
+            <textarea
+              id="faqAnswerEn"
+              class="form-control"
+              rows="3"
+              placeholder="Full answer in English…"
+              required
+            ></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="faqAnswerFr" class="form-label">Answer (Français)</label>
+            <textarea
+              id="faqAnswerFr"
+              class="form-control"
+              rows="3"
+              placeholder="Réponse complète en français…"
+              required
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 justify-content-between">
+        <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <div class="d-flex gap-2">
+          <button
+            type="button"
+            class="btn-danger-compact d-none"
+            id="deleteFaqBtn"
+          >
+            Delete
+          </button>
+          <button
+            type="button"
+            class="btn-primary-compact"
+            id="saveFaqBtn"
+          >
+            Save FAQ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Sidebar toggle on mobile
+  const sidebar = document.getElementById('adminSidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const shell = document.querySelector('.admin-shell');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+      shell.classList.toggle('sidebar-open');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      }
+    });
+
+    // Close sidebar on link click
+    const navLinks = sidebar.querySelectorAll('.admin-nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      });
+    });
+  }
+
+  // Simple client-side row filter (search + status only; extend later)
+  function applyTableFilter() {
+    const search = document.getElementById('faqSearch').value.toLowerCase().trim();
+    const status = document.getElementById('faqStatusFilter').value;
+    const rows = document.querySelectorAll('#faqsTable tbody tr');
+
+    rows.forEach(row => {
+      const qEn = row.cells[0].innerText.toLowerCase();
+      const qFr = row.cells[1].innerText.toLowerCase();
+      const slug = row.cells[2].innerText.toLowerCase();
+      const rowStatus = row.dataset.status || '';
+
+      const matchesSearch =
+        !search ||
+        qEn.includes(search) ||
+        qFr.includes(search) ||
+        slug.includes(search);
+
+      const matchesStatus = !status || status === rowStatus;
+
+      row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+    });
+  }
+
+  document.getElementById('applyFaqFilters').addEventListener('click', applyTableFilter);
+  document.getElementById('faqSearch').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') applyTableFilter();
+  });
+
+  document.getElementById('resetFaqFilters').addEventListener('click', () => {
+    document.getElementById('faqSearch').value = '';
+    document.getElementById('faqStatusFilter').value = '';
+    applyTableFilter();
+  });
+
+  // Slug generator
+  function slugify(str) {
+    return str
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  const questionEnInput = document.getElementById('faqQuestionEn');
+  const slugInput = document.getElementById('faqSlug');
+
+  questionEnInput.addEventListener('input', () => {
+    // Only auto-update slug when creating a new FAQ
+    if (!faqModal.dataset.mode || faqModal.dataset.mode === 'create') {
+      slugInput.value = slugify(questionEnInput.value);
+    }
+  });
+
+  // FAQ modal behaviour (create/edit)
+  const faqModal = document.getElementById('faqModal');
+  const deleteFaqBtn = document.getElementById('deleteFaqBtn');
+
+  faqModal.addEventListener('show.bs.modal', event => {
+    const trigger = event.relatedTarget;
+    const mode = trigger?.getAttribute('data-mode') || 'create';
+    faqModal.dataset.mode = mode;
+
+    const titleEl = document.getElementById('faqModalTitle');
+    const form = document.getElementById('faqForm');
+
+    if (mode === 'create') {
+      titleEl.textContent = 'New FAQ';
+      form.reset();
+      document.getElementById('faqId').value = '';
+      deleteFaqBtn.classList.add('d-none');
+      slugInput.value = '';
+    } else {
+      const rowId = trigger.getAttribute('data-row-id');
+      const row = document.querySelector(`#faqsTable tbody tr[data-id="${rowId}"]`);
+      if (!row) return;
+
+      titleEl.textContent = 'Edit FAQ';
+      document.getElementById('faqId').value = rowId;
+      questionEnInput.value = row.dataset.qEn || '';
+      document.getElementById('faqQuestionFr').value = row.dataset.qFr || '';
+      document.getElementById('faqAnswerEn').value = row.dataset.aEn || '';
+      document.getElementById('faqAnswerFr').value = row.dataset.aFr || '';
+      slugInput.value = row.dataset.slug || '';
+      document.getElementById('faqStatus').value = row.dataset.status || 'active';
+      deleteFaqBtn.classList.remove('d-none');
+    }
+  });
+
+  // Save FAQ stub
+  document.getElementById('saveFaqBtn').addEventListener('click', () => {
+    const payload = {
+      id: document.getElementById('faqId').value || null,
+      question_en: document.getElementById('faqQuestionEn').value.trim(),
+      question_fr: document.getElementById('faqQuestionFr').value.trim(),
+      answer_en: document.getElementById('faqAnswerEn').value.trim(),
+      answer_fr: document.getElementById('faqAnswerFr').value.trim(),
+      slug: document.getElementById('faqSlug').value.trim(),
+      status: document.getElementById('faqStatus').value
+    };
+
+    console.log('Save FAQ payload:', payload);
+    // TODO: send to backend (create or update), then refresh table
+
+    const modalInstance = bootstrap.Modal.getInstance(faqModal);
+    if (modalInstance) modalInstance.hide();
+  });
+
+  // Delete FAQ stub
+  deleteFaqBtn.addEventListener('click', () => {
+    const id = document.getElementById('faqId').value;
+    if (!id) return;
+    if (!confirm('Delete this FAQ?')) return;
+
+    console.log('Delete FAQ with id:', id);
+    // TODO: call backend then remove row from table
+
+    const modalInstance = bootstrap.Modal.getInstance(faqModal);
+    if (modalInstance) modalInstance.hide();
+  });
+</script>
+
+</body>
+</html>

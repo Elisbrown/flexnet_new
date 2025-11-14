@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --flex-green-soft: #b9f7cf;
+      --bg-dark: #050505;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .settings-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+      .settings-inner {
+        max-width: 430px;
+        margin: 0 auto;
+      }
+    }
+
+    /* Top black header */
+    .settings-header {
+      padding: 1.6rem 1.4rem 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .settings-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+    }
+
+    .logout-pill {
+      background: #d60000;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem 0.35rem 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .logout-pill i {
+      font-size: 1.1rem;
+    }
+
+    /* White content area */
+    .settings-content-wrapper {
+      background: #ffffff;
+      border-radius: 32px 32px 24px 24px;
+      padding: 1.6rem 1.4rem 6rem;
+      color: #111111;
+    }
+
+    .section-label {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    /* User row */
+    .user-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.4rem;
+    }
+
+    .user-info-main {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #dddddd;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .edit-pill {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .edit-pill i {
+      font-size: 1.2rem;
+    }
+
+    /* Inputs */
+    .settings-input {
+      border-radius: 16px;
+      border: 1.5px solid #303030;
+      padding: 0.9rem 1.1rem;
+      font-size: 1rem;
+      width: 100%;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+
+    .settings-input::placeholder {
+      color: #9b9b9b;
+    }
+
+    .settings-input:focus {
+      border-color: #000000;
+      box-shadow: 0 0 0 1px #00000011;
+    }
+
+    /* Action buttons */
+    .actions-row {
+      display: flex;
+      gap: 0.9rem;
+      margin-top: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-save {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 0.9rem 0.5rem;
+      background: var(--flex-green);
+      color: #000000;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-save:hover,
+    .btn-save:focus {
+      background: #37f17a;
+    }
+
+    .btn-change-pin {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 0.9rem 0.5rem;
+      background: #000000;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-change-pin:hover,
+    .btn-change-pin:focus {
+      background: #111111;
+    }
+
+    /* Language preferences */
+    .lang-label {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .lang-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .lang-btn {
+      border-radius: 14px;
+      padding: 0.7rem 1.5rem;
+      font-size: 0.96rem;
+      font-weight: 500;
+      border: 1.5px solid #000000;
+      background: #ffffff;
+      color: #000000;
+      cursor: pointer;
+    }
+
+    .lang-btn.active {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    /* FAQ accordion */
+    .faq-accordion .accordion-item {
+      border: 0;
+      border-bottom: 1px solid #eaeaea;
+      border-radius: 0 !important;
+    }
+
+    .faq-accordion .accordion-button {
+      padding: 0.75rem 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111111;
+      background-color: #ffffff;
+      box-shadow: none;
+    }
+
+    .faq-accordion .accordion-button:not(.collapsed) {
+      background-color: #ffffff;
+      color: #111111;
+      box-shadow: none;
+    }
+
+    .faq-accordion .accordion-button:focus {
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    .faq-accordion .accordion-body {
+      padding: 0 0 0.9rem;
+      font-size: 0.9rem;
+      color: #5a5a5a;
+      line-height: 1.45;
+    }
+
+    /* Bottom nav */
+    .bottom-nav-wrapper {
+      position: fixed;
+      left: 50%;
+      bottom: 1.1rem;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      padding: 0 1.4rem;
+      pointer-events: none;
+    }
+
+    .bottom-nav {
+      background: var(--flex-green-soft);
+      border-radius: 999px;
+      padding: 0.45rem 0.7rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: auto;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-item-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.08rem;
+      font-size: 0.74rem;
+      color: #000000;
+      padding: 0.35rem 0.1rem;
+      position: relative;
+      z-index: 0;
+    }
+
+    .nav-item-btn i {
+      font-size: 1.1rem;
+    }
+
+    .nav-item-btn.active::before {
+      content: "";
+      position: absolute;
+      inset: -0.45rem -0.45rem;
+      border-radius: 999px;
+      background: var(--flex-green);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="settings-page">
+  <div class="settings-inner">
+
+    <!-- Header -->
+    <header class="settings-header">
+      <div class="settings-title">Settings</div>
+      <button class="logout-pill" type="button" id="logoutBtn">
+        Logout
+        <i class="bi bi-power"></i>
+      </button>
+    </header>
+
+    <!-- White content -->
+    <div class="settings-content-wrapper">
+
+      <!-- User info section -->
+      <div class="section-label">User Info</div>
+
+      <div class="user-row">
+        <div class="user-info-main">
+          <div class="user-avatar">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400"
+                 alt="User avatar">
+          </div>
+          <div class="user-name">Sunyin Elisbrown</div>
+        </div>
+        <button class="edit-pill" type="button" id="editProfileBtn">
+          <i class="bi bi-pencil"></i>
+        </button>
+      </div>
+
+      <!-- Inputs -->
+      <input
+        type="tel"
+        class="settings-input"
+        placeholder="679690703"
+        value="679690703"
+      >
+      <input
+        type="email"
+        class="settings-input"
+        placeholder="selisbrown@cirronyx.com"
+        value="selisbrown@cirronyx.com"
+      >
+      <input
+        type="text"
+        class="settings-input"
+        placeholder="Room 12"
+        value="Room 12"
+      >
+      <input
+        type="text"
+        class="settings-input"
+        placeholder="CITADEL COMPLEX HOLDINGS"
+        value="CITADEL COMPLEX HOLDINGS"
+      >
+
+      <!-- Action buttons -->
+      <div class="actions-row">
+        <button class="btn-save" type="button" id="saveChangesBtn">
+          Save Changes
+        </button>
+        <button class="btn-change-pin" type="button" id="changePinBtn">
+          Change PIN
+        </button>
+      </div>
+
+      <!-- Language preferences -->
+      <div class="lang-label">Language Preferences</div>
+      <div class="lang-row">
+        <button class="lang-btn active" type="button" data-lang="en">
+          English
+        </button>
+        <button class="lang-btn" type="button" data-lang="fr">
+          Français
+        </button>
+      </div>
+
+      <!-- FAQs (Accordion) -->
+      <div class="section-label">FAQs</div>
+      <div class="accordion faq-accordion" id="faqAccordion">
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqHeadingOne">
+            <button class="accordion-button" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#faqCollapseOne"
+                    aria-expanded="true"
+                    aria-controls="faqCollapseOne">
+              How can I renew my subscription?
+            </button>
+          </h2>
+          <div id="faqCollapseOne" class="accordion-collapse collapse show"
+               aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Go to the <strong>Billing</strong> page, select your payment method
+              (MTN MoMo or Orange Money), and follow the instructions to complete payment.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqHeadingTwo">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#faqCollapseTwo"
+                    aria-expanded="false"
+                    aria-controls="faqCollapseTwo">
+              What happens if I miss my payment date?
+            </button>
+          </h2>
+          <div id="faqCollapseTwo" class="accordion-collapse collapse"
+               aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Your account may be temporarily suspended until payment is completed.
+              Once renewed, your connection will be restored after 24 hours from the time of payment.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqHeadingThree">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#faqCollapseThree"
+                    aria-expanded="false"
+                    aria-controls="faqCollapseThree">
+              How do I change my PIN?
+            </button>
+          </h2>
+          <div id="faqCollapseThree" class="accordion-collapse collapse"
+               aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              On the <strong>Settings</strong> page, tap <strong>Change PIN</strong> and
+              follow the on-screen steps to update your security PIN.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqHeadingFour">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#faqCollapseFour"
+                    aria-expanded="false"
+                    aria-controls="faqCollapseFour">
+              Can I switch between English and French?
+            </button>
+          </h2>
+          <div id="faqCollapseFour" class="accordion-collapse collapse"
+               aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Yes. Under <strong>Language Preferences</strong>, choose
+              either <em>English</em> or <em>Français</em> to change the app language.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Bottom nav (fixed) -->
+<div class="bottom-nav-wrapper">
+  <nav class="bottom-nav">
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-house-door"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-cash-coin"></i>
+      <span>Billing</span>
+    </button>
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-receipt"></i>
+      <span>Subscription</span>
+    </button>
+    <button class="nav-item-btn active" type="button">
+      <i class="bi bi-gear"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api-client.js"></script>
+
+<script>
+  // Check authentication
+  if (!api.isAuthenticated()) {
+    window.location.href = '/user/login.html';
+  }
+
+  // Language toggle
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const lang = btn.dataset.lang;
+      localStorage.setItem('preferred_language', lang);
+      // TODO: hook into i18n layer to change UI language
+    });
+  });
+
+  // Bottom nav active state
+  document.querySelectorAll('.nav-item-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.nav-item-btn')
+        .forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Navigate based on clicked tab
+      const btnText = btn.querySelector('span').textContent.toLowerCase();
+      if (btnText === 'dashboard') {
+        window.location.href = '/user/dashboard.html';
+      } else if (btnText === 'billing') {
+        window.location.href = '/user/billing.html';
+      } else if (btnText === 'subscription') {
+        window.location.href = '/user/subscriptions.html';
+      }
+    });
+  });
+
+  // Logout button
+  document.getElementById('logoutBtn').addEventListener('click', async function () {
+    if (confirm('Are you sure you want to logout?')) {
+      try {
+        await api.logout();
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Force logout locally
+        localStorage.removeItem('user_token');
+        localStorage.removeItem('user_data');
+        window.location.href = '/user/login.html';
+      }
+    }
+  });
+
+  // Save Changes button
+  document.getElementById('saveChangesBtn').addEventListener('click', async function () {
+    try {
+      // Collect notification preferences
+      const data = {
+        notifications_enabled: document.getElementById('notificationsToggle')?.checked || false,
+        sms_notifications: document.getElementById('smsNotifications')?.checked || false,
+        email_notifications: document.getElementById('emailNotifications')?.checked || false
+      };
+
+      const response = await api.updateUserProfile(data);
+      if (response.success) {
+        alert('Settings saved successfully!');
+      } else {
+        alert('Failed to save settings: ' + response.message);
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
+  });
+
+  // Change PIN button
+  document.getElementById('changePinBtn').addEventListener('click', function () {
+    window.location.href = '/user/change-pin.html';
+  });
+
+  // Edit profile button
+  document.getElementById('editProfileBtn').addEventListener('click', async function () {
+    try {
+      const profile = await api.getUserProfile();
+      if (profile.success && profile.data) {
+        // Populate profile form
+        localStorage.setItem('edit_profile_data', JSON.stringify(profile.data));
+        // For now, just show an alert - in a real app, open a modal
+        alert(`Profile:\nName: ${profile.data.full_name}\nEmail: ${profile.data.email || 'N/A'}\nPhone: ${profile.data.phone}`);
+      }
+    } catch (error) {
+      alert('Error loading profile: ' + error.message);
+    }
+  });
+</script>
+<script src="/pwa-init.js"></script>
+</body>
+</html>

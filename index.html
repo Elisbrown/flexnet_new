@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FlexNet - GPS Household Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    // Redirect based on user type or show selection
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      const userType = localStorage.getItem('userType');
+      
+      if (token && userType === 'admin') {
+        window.location.href = '/admin/dashboard.html';
+      } else if (token && userType === 'user') {
+        window.location.href = '/dashboard.html';
+      } else {
+        // Show selection page
+        document.getElementById('selection').style.display = 'flex';
+      }
+    });
+    
+    function goToAdminLogin() {
+      window.location.href = '/admin/login.html';
+    }
+    
+    function goToUserLogin() {
+      window.location.href = '/login.html';
+    }
+  </script>
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --bg-dark: #050505;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: radial-gradient(circle at top left, #111 0, #000 40%, #000 100%);
+      color: #fff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    
+    #selection {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    
+    .selection-card {
+      background: #050505;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 400px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .selection-card:hover {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 20px rgba(39, 228, 106, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .selection-card h3 {
+      color: var(--flex-green);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    
+    .selection-card p {
+      color: #aaa;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn-select {
+      background: var(--flex-green);
+      color: #000;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-select:hover {
+      background: #1fc74a;
+      transform: scale(1.05);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      color: var(--flex-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .header p {
+      color: #aaa;
+    }
+    
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="selection">
+    <div class="header">
+      <h1>🌍 FlexNet</h1>
+      <p>GPS Household Management System</p>
+    </div>
+    
+    <div class="cards-container">
+      <div class="selection-card" onclick="goToAdminLogin()">
+        <h3>👨‍💼 Admin Portal</h3>
+        <p>Manage locations, households, payments, and system users</p>
+        <button class="btn-select">Admin Login</button>
+      </div>
+      
+      <div class="selection-card" onclick="goToUserLogin()">
+        <h3>👤 User Portal</h3>
+        <p>Manage your subscriptions, billing, and settings</p>
+        <button class="btn-select">User Login</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

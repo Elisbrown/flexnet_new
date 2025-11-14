@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Admins & Roles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/user/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/user/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --flex-green-soft: #b9f7cf;
+      --bg-sidebar: #000000;
+      --border-subtle: #222222;
+      --text-muted: #a5a5a5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid #141414;
+      padding: 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .admin-sidebar-logo-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--flex-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+
+    .admin-sidebar-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1.1;
+    }
+
+    .admin-sidebar-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.8rem;
+      flex: 1;
+    }
+
+    .admin-nav-item + .admin-nav-item {
+      margin-top: 0.2rem;
+    }
+
+    .admin-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 999px;
+      color: #fdfdfd;
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .admin-nav-link i {
+      font-size: 1rem;
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    .admin-nav-link:hover {
+      background: #111111;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active {
+      background: var(--flex-green);
+      color: #000000;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active i {
+      color: #000000;
+    }
+
+    .admin-sidebar-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* MAIN */
+    .admin-main {
+      flex: 1;
+      background: radial-gradient(circle at top, #151515 0, #050505 45%, #000 100%);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* TOPBAR */
+    .admin-topbar {
+      padding: 1rem 1.7rem 0.8rem;
+      border-bottom: 1px solid #151515;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .topbar-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .topbar-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topbar-hamburger {
+      display: none;
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 1.4rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .topbar-search {
+      position: relative;
+      min-width: 220px;
+      max-width: 260px;
+      flex: 1 1 auto;
+    }
+
+    .topbar-search input {
+      width: 100%;
+      background: #070707;
+      border-radius: 999px;
+      border: 1px solid #222222;
+      padding: 0.5rem 2.1rem 0.5rem 0.9rem;
+      color: #ffffff;
+      font-size: 0.86rem;
+    }
+
+    .topbar-search input::placeholder { color: #555; }
+
+    .topbar-search input:focus {
+      outline: none;
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.25);
+    }
+
+    .topbar-search i {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    .topbar-admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+      border-radius: 999px;
+      background: #050505;
+      border: 1px solid #222222;
+    }
+
+    .topbar-admin-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #333;
+    }
+
+    .topbar-admin-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .topbar-admin-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .topbar-admin-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .topbar-admin-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-lang-badge {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid #333;
+      color: #ccc;
+      white-space: nowrap;
+    }
+
+    /* CONTENT */
+    .admin-content {
+      padding: 1.4rem 1.7rem 2rem;
+      max-width: 1440px;
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    .page-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .page-header-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .page-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .page-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-new-admin {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .btn-new-admin:hover { background: #37f17a; }
+
+    /* FILTERS */
+    .filter-bar {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 0.8rem 0.9rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .filter-row > *:not(.filter-actions) {
+      flex: 1 1 200px;
+      min-width: 150px;
+    }
+
+    .filter-row .form-control,
+    .filter-row .form-select {
+      font-size: 0.82rem;
+      background: #050505;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 999px;
+      padding-inline: 0.8rem;
+    }
+
+    .filter-row .form-control::placeholder { color: #666; }
+
+    .filter-row .form-control:focus,
+    .filter-row .form-select:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+      flex: 0 0 auto;
+    }
+
+    .btn-filter-apply,
+    .btn-filter-reset {
+      border-radius: 999px;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.9rem;
+      white-space: nowrap;
+    }
+
+    .btn-filter-apply {
+      background: var(--flex-green);
+      color: #000;
+      border: none;
+      font-weight: 600;
+    }
+
+    .btn-filter-apply:hover { background: #37f17a; }
+
+    .btn-filter-reset {
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+    }
+
+    /* TABLE CARD */
+    .content-card {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .content-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .content-card-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .content-card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .table-wrapper {
+      margin-top: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid #202020;
+      overflow: auto;
+      max-height: 520px;
+    }
+
+    .table-dark-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .table-dark-custom thead {
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-dark-custom th,
+    .table-dark-custom td {
+      padding: 0.55rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .table-dark-custom tbody tr:nth-child(even) {
+      background: #060606;
+    }
+
+    .badge-role {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.12rem 0.55rem;
+      border: 1px solid #333;
+    }
+
+    .badge-role.super {
+      border-color: #ffb347;
+      color: #ffb347;
+    }
+
+    .badge-role.billing {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    .badge-role.support {
+      border-color: #58a6ff;
+      color: #58a6ff;
+    }
+
+    .badge-active {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.12rem 0.55rem;
+      background: rgba(39,228,106,0.16);
+      color: var(--flex-green);
+    }
+
+    .badge-inactive {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.12rem 0.55rem;
+      background: rgba(255,59,48,0.16);
+      color: #ff3b30;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      border: 1px solid #333;
+      background: #050505;
+      color: #f1f1f1;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* MODAL */
+    .modal-dark .modal-content {
+      background: #050505;
+      color: #fff;
+      border-radius: 20px;
+      border: 1px solid #333;
+    }
+
+    .modal-dark .modal-header {
+      border-bottom: 1px solid #222;
+    }
+
+    .modal-dark .btn-close { filter: invert(1); }
+
+    .form-label {
+      font-size: 0.82rem;
+      color: #e0e0e0;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 0.85rem;
+      background: #050505;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+    }
+
+    .form-control::placeholder { color: #666; }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.2);
+      outline: none;
+    }
+
+    .btn-primary-compact {
+      border-radius: 999px;
+      background: var(--flex-green);
+      color: #000;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-danger-compact {
+      border-radius: 999px;
+      background: #ff4b5c;
+      color: #fff;
+      border: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.45rem 1.2rem;
+    }
+
+    .btn-primary-compact:hover { background: #37f17a; }
+    .btn-danger-compact:hover { background: #ff263f; }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      .admin-shell.sidebar-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+      }
+
+      .admin-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1030;
+        overflow-y: auto;
+        border-right: 1px solid #141414;
+      }
+      .admin-sidebar.open { transform: translateX(0); }
+      .topbar-hamburger { 
+        display: inline-block;
+        cursor: pointer;
+        padding: 0.5rem;
+        margin: -0.5rem;
+      }
+      .topbar-hamburger:hover { opacity: 0.8; }
+      .topbar-subtitle { max-width: 220px; }
+    }
+
+    @media (max-width: 768px) {
+      .admin-topbar,
+      .admin-content {
+        padding-inline: 1.1rem;
+      }
+      .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-row > *:not(.filter-actions) {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .filter-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+      .content-card-header,
+      .page-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .topbar-search { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo-circle">F</div>
+      <div>
+        <div class="admin-sidebar-title">Flexnet</div>
+        <div class="admin-sidebar-sub">Admin panel</div>
+      </div>
+    </div>
+
+    <ul class="admin-nav">
+      <li class="admin-nav-item">
+        <a href="dashboard.html" class="admin-nav-link">
+          <i class="bi bi-grid-1x2"></i><span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="locations.html" class="admin-nav-link">
+          <i class="bi bi-building"></i><span>Locations</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="payments.html" class="admin-nav-link">
+          <i class="bi bi-cash-coin"></i><span>Payments</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="support.html" class="admin-nav-link">
+          <i class="bi bi-life-preserver"></i><span>Support</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="faqs.html" class="admin-nav-link">
+          <i class="bi bi-question-circle"></i><span>FAQs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="admins.html" class="admin-nav-link active">
+          <i class="bi bi-people"></i><span>Admins &amp; Roles</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="logs.html" class="admin-nav-link">
+          <i class="bi bi-activity"></i><span>System Logs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="profile.html" class="admin-nav-link">
+          <i class="bi bi-person-gear"></i><span>My Profile</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-sidebar-footer">
+      v1.0 · Admin actions are audited.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <!-- TOPBAR -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button class="topbar-hamburger" id="sidebarToggle" type="button">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <div class="topbar-title">Admins &amp; Roles</div>
+          <div class="topbar-subtitle">
+            Manage access for Flexnet staff across billing, support and operations.
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <input type="text" id="topSearch" placeholder="Search admins…">
+          <i class="bi bi-search"></i>
+        </div>
+        <span class="topbar-lang-badge">EN/FR • Light</span>
+        <div class="topbar-admin-pill">
+          <div class="topbar-admin-avatar">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Admin">
+          </div>
+          <div class="topbar-admin-meta">
+            <span class="topbar-admin-name">Elisbrown</span>
+            <span class="topbar-admin-role">Billing Admin</span>
+          </div>
+          <i class="bi bi-chevron-down" style="font-size:0.8rem;color:#777;"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+      <!-- Header row -->
+      <div class="page-header-row">
+        <div class="page-header-main">
+          <div class="page-title">Team access</div>
+          <div class="page-subtitle">
+            Control who can manage payments, subscriptions, tickets and system settings.
+          </div>
+        </div>
+        <div class="page-header-actions">
+          <button
+            class="btn-new-admin"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#adminModal"
+            data-mode="create"
+          >
+            <i class="bi bi-plus-lg"></i>
+            New admin
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <section class="filter-bar">
+        <div class="filter-row">
+          <input
+            type="text"
+            id="adminSearch"
+            class="form-control"
+            placeholder="Search by name / email…"
+          >
+          <select id="roleFilter" class="form-select">
+            <option value="">All roles</option>
+            <option value="Super Admin">Super Admin</option>
+            <option value="Billing Admin">Billing Admin</option>
+            <option value="Support Agent">Support Agent</option>
+          </select>
+          <select id="statusFilter" class="form-select">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <div class="filter-actions">
+            <button class="btn-filter-apply" type="button" id="applyAdminFilters">Apply</button>
+            <button class="btn-filter-reset" type="button" id="resetAdminFilters">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Table -->
+      <section class="content-card">
+        <div class="content-card-header">
+          <div>
+            <div class="content-card-title">Admins list</div>
+            <div class="content-card-subtitle">
+              Use roles and status to keep access tight; all changes are logged.
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table-dark-custom" id="adminsTable">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Last login</th>
+              <th style="width:110px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+              data-id="1"
+              data-name="Sunyin Elisbrown"
+              data-email="elisbrown@flexnet.cm"
+              data-role="Billing Admin"
+              data-status="active"
+            >
+              <td>Sunyin Elisbrown</td>
+              <td>elisbrown@flexnet.cm</td>
+              <td><span class="badge-role billing">Billing Admin</span></td>
+              <td><span class="badge-active">Active</span></td>
+              <td>2025-03-13 09:45</td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit"
+                    data-bs-toggle="modal"
+                    data-bs-target="#adminModal"
+                    data-mode="edit"
+                    data-row-id="1"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-toggle-status"
+                    title="Deactivate"
+                  >
+                    <i class="bi bi-slash-circle"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-reset-password"
+                    title="Reset password"
+                  >
+                    <i class="bi bi-key"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr
+              data-id="2"
+              data-name="Jane Doe"
+              data-email="jane.doe@flexnet.cm"
+              data-role="Support Agent"
+              data-status="active"
+            >
+              <td>Jane Doe</td>
+              <td>jane.doe@flexnet.cm</td>
+              <td><span class="badge-role support">Support Agent</span></td>
+              <td><span class="badge-active">Active</span></td>
+              <td>2025-03-12 18:10</td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit"
+                    data-bs-toggle="modal"
+                    data-bs-target="#adminModal"
+                    data-mode="edit"
+                    data-row-id="2"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-toggle-status"
+                    title="Deactivate"
+                  >
+                    <i class="bi bi-slash-circle"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-reset-password"
+                    title="Reset password"
+                  >
+                    <i class="bi bi-key"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr
+              data-id="3"
+              data-name="Martin K."
+              data-email="martin.k@flexnet.cm"
+              data-role="Super Admin"
+              data-status="inactive"
+            >
+              <td>Martin K.</td>
+              <td>martin.k@flexnet.cm</td>
+              <td><span class="badge-role super">Super Admin</span></td>
+              <td><span class="badge-inactive">Inactive</span></td>
+              <td>2025-02-25 11:02</td>
+              <td>
+                <div class="table-actions">
+                  <button
+                    class="btn-icon"
+                    title="Edit"
+                    data-bs-toggle="modal"
+                    data-bs-target="#adminModal"
+                    data-mode="edit"
+                    data-row-id="3"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-toggle-status"
+                    title="Reactivate"
+                  >
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-reset-password"
+                    title="Reset password"
+                  >
+                    <i class="bi bi-key"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Admin create/edit modal -->
+<div class="modal fade modal-dark" id="adminModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminModalTitle">New admin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="adminForm">
+          <input type="hidden" id="editingAdminId" value="">
+          <div class="mb-3">
+            <label for="adminName" class="form-label">Full name</label>
+            <input type="text" class="form-control" id="adminName" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="adminEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="adminEmail" required>
+          </div>
+
+          <div class="mb-3 row g-3">
+            <div class="col-md-6">
+              <label for="adminRole" class="form-label">Role</label>
+              <select id="adminRole" class="form-select">
+                <option value="Super Admin">Super Admin</option>
+                <option value="Billing Admin">Billing Admin</option>
+                <option value="Support Agent">Support Agent</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="adminStatus" class="form-label">Status</label>
+              <select id="adminStatus" class="form-select">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="alert alert-secondary small mb-0" role="alert"
+               style="background:#080808;border-color:#222;color:#ddd;">
+            New admins receive a password setup email. Resetting a password sends
+            a one-time link and invalidates previous sessions.
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 justify-content-between">
+        <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn-danger-compact d-none" id="deleteAdminBtn">
+            Deactivate
+          </button>
+          <button type="button" class="btn-primary-compact" id="saveAdminBtn">
+            Save admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api-client.js"></script>
+<script>
+  // Check authentication
+  if (!api.isAuthenticated()) {
+    window.location.href = '/admin/login.html';
+  }
+
+  let admins = [];
+  let filteredAdmins = [];
+  let allRoles = [];
+
+  /**
+   * Map role names to IDs
+   */
+  function getRoleIdByName(name) {
+    const roleMap = {
+      'SUPER_ADMIN': 'Super Admin',
+      'BILLING_ADMIN': 'Billing Admin',
+      'SUPPORT_AGENT': 'Support Agent'
+    };
+    for (const [id, displayName] of Object.entries(roleMap)) {
+      if (displayName === name) return id;
+    }
+    return null;
+  }
+
+  /**
+   * Load admins from API
+   */
+  async function loadAdmins() {
+    try {
+      const response = await api.getAdmins(1, 100);
+      admins = response.data || [];
+      filteredAdmins = [...admins];
+      renderAdminsTable();
+    } catch (error) {
+      alert('Failed to load admins: ' + error.message);
+    }
+  }
+
+  /**
+   * Load all available roles
+   */
+  async function loadRoles() {
+    try {
+      const response = await api.getRoles();
+      allRoles = response.data || [];
+    } catch (error) {
+      console.error('Failed to load roles:', error);
+    }
+  }
+
+  /**
+   * Render admins table
+   */
+  function renderAdminsTable() {
+    const tbody = document.querySelector('#adminsTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (filteredAdmins.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No admins found</td></tr>';
+      return;
+    }
+
+    filteredAdmins.forEach(admin => {
+      const statusClass = admin.is_active ? 'active' : 'inactive';
+      const statusText = admin.is_active ? 'Active' : 'Inactive';
+      const roleDisplay = admin.roles && admin.roles.length > 0 
+        ? admin.roles.map(r => r.name).join(', ') 
+        : 'No role';
+      
+      const row = `
+        <tr
+          data-id="${admin.id}"
+          data-name="${admin.name}"
+          data-email="${admin.email}"
+          data-status="${admin.is_active ? 'active' : 'inactive'}"
+        >
+          <td>${admin.name}</td>
+          <td>${admin.email}</td>
+          <td><span class="badge-role">${roleDisplay}</span></td>
+          <td><span class="badge-${statusClass}">${statusText}</span></td>
+          <td>${admin.last_login ? new Date(admin.last_login).toLocaleString() : 'Never'}</td>
+          <td>
+            <div class="table-actions">
+              <button
+                class="btn-icon"
+                title="Edit"
+                data-bs-toggle="modal"
+                data-bs-target="#adminModal"
+                data-mode="edit"
+                data-row-id="${admin.id}"
+                onclick="event.preventDefault(); editAdmin(${admin.id})"
+              >
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button
+                class="btn-icon btn-toggle-status"
+                title="${admin.is_active ? 'Deactivate' : 'Reactivate'}"
+                onclick="toggleAdminStatus(${admin.id})"
+              >
+                <i class="bi bi-${admin.is_active ? 'slash-circle' : 'arrow-counterclockwise'}"></i>
+              </button>
+              <button
+                class="btn-icon btn-reset-password"
+                title="Delete"
+                onclick="deleteAdmin(${admin.id})"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  /**
+   * Edit admin
+   */
+  function editAdmin(id) {
+    const admin = admins.find(a => a.id === id);
+    if (admin) {
+      document.getElementById('editingAdminId').value = id;
+      document.getElementById('adminName').value = admin.name;
+      document.getElementById('adminEmail').value = admin.email;
+      document.getElementById('adminStatus').value = admin.is_active ? 'active' : 'inactive';
+      document.getElementById('deleteAdminBtn').classList.remove('d-none');
+    }
+  }
+
+  /**
+   * Toggle admin active status
+   */
+  async function toggleAdminStatus(id) {
+    const admin = admins.find(a => a.id === id);
+    if (!admin) return;
+
+    try {
+      const newStatus = { is_active: !admin.is_active };
+      await api.updateAdmin(id, newStatus);
+      alert(admin.is_active ? 'Admin deactivated' : 'Admin activated');
+      loadAdmins();
+    } catch (error) {
+      alert('Failed to toggle status: ' + error.message);
+    }
+  }
+
+  /**
+   * Delete admin
+   */
+  async function deleteAdmin(id) {
+    if (!confirm('Are you sure you want to delete this admin?')) return;
+
+    try {
+      await api.deleteAdmin(id);
+      alert('Admin deleted successfully');
+      loadAdmins();
+    } catch (error) {
+      alert('Failed to delete admin: ' + error.message);
+    }
+  }
+
+  // Sidebar toggle on mobile
+  const sidebar = document.getElementById('adminSidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const shell = document.querySelector('.admin-shell');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+      shell.classList.toggle('sidebar-open');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      }
+    });
+
+    // Close sidebar on link click
+    const navLinks = sidebar.querySelectorAll('.admin-nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      });
+    });
+  }
+
+  // Admin form submission
+  document.getElementById('saveAdminBtn').addEventListener('click', async () => {
+    const editingId = document.getElementById('editingAdminId').value;
+    const data = {
+      name: document.getElementById('adminName').value.trim(),
+      email: document.getElementById('adminEmail').value.trim(),
+      is_active: document.getElementById('adminStatus').value === 'active' ? 1 : 0
+    };
+
+    try {
+      if (editingId) {
+        await api.updateAdmin(editingId, data);
+        alert('Admin updated successfully');
+        document.getElementById('editingAdminId').value = '';
+      } else {
+        // For creating new admin, password should be auto-generated by backend
+        await api.createAdmin(data);
+        alert('Admin created successfully. A password setup email will be sent.');
+      }
+
+      const modal = bootstrap.Modal.getInstance(document.getElementById('adminModal'));
+      modal.hide();
+      document.getElementById('adminForm').reset();
+      loadAdmins();
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
+  });
+
+  // Reset modal when hidden
+  document.getElementById('adminModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('adminForm').reset();
+    document.getElementById('editingAdminId').value = '';
+    document.getElementById('deleteAdminBtn').classList.add('d-none');
+  });
+
+  // Create new admin button
+  document.getElementById('adminModal').addEventListener('show.bs.modal', event => {
+    const trigger = event.relatedTarget;
+    const mode = trigger?.getAttribute('data-mode');
+    
+    if (mode !== 'edit') {
+      // Create mode
+      document.getElementById('adminForm').reset();
+      document.getElementById('editingAdminId').value = '';
+      document.getElementById('deleteAdminBtn').classList.add('d-none');
+    }
+  });
+
+  // Simple filters
+  function applyAdminFilters() {
+    const search = document.getElementById('adminSearch')?.value.toLowerCase().trim() || '';
+    const role = document.getElementById('roleFilter')?.value || '';
+    const status = document.getElementById('statusFilter')?.value || '';
+
+    filteredAdmins = admins.filter(admin => {
+      const matchesSearch = !search || 
+        admin.name.toLowerCase().includes(search) || 
+        admin.email.toLowerCase().includes(search);
+      const matchesStatus = !status || 
+        (status === 'active' && admin.is_active) || 
+        (status === 'inactive' && !admin.is_active);
+      
+      return matchesSearch && matchesStatus;
+    });
+
+    renderAdminsTable();
+  }
+
+  document.getElementById('applyAdminFilters')?.addEventListener('click', applyAdminFilters);
+  document.getElementById('resetAdminFilters')?.addEventListener('click', () => {
+    document.getElementById('adminSearch').value = '';
+    document.getElementById('roleFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    applyAdminFilters();
+  });
+
+  // Load data on page load
+  Promise.all([loadAdmins(), loadRoles()]);
+</script>
+<script src="/pwa-init.js"></script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons (for bottom nav + expiry icon) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --flex-green-soft: #b9f7cf;
+      --bg-dark: #050505;
+      --chip-dark: #262626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .dashboard {
+      min-height: 100vh;
+      padding: 1.6rem 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Constrain width on larger screens – still app-like */
+    @media (min-width: 768px) {
+      .dashboard {
+        max-width: 430px;
+        margin: 0 auto;
+      }
+    }
+
+    /* HEADER: welcome + status pill */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.6rem;
+      margin-top: .2rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .user-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-greeting {
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    .user-greeting span {
+      font-weight: 700;
+      display: block;
+    }
+
+    .user-greeting .line-2 {
+      font-size: 1.02rem;
+    }
+
+    .status-pill {
+      background: #ffffff;
+      color: #000000;
+      border-radius: 999px;
+      padding: 0.3rem 0.9rem 0.3rem 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--flex-green);
+      box-shadow: 0 0 0 3px #c9ffd8;
+    }
+
+    /* DAYS LEFT STRIP */
+    .days-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.7rem;
+      gap: 1.2rem;
+    }
+
+    .days-left-card {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .progress-ring {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background:
+        radial-gradient(farthest-side, #050505 76%, transparent 78%),
+        conic-gradient(var(--flex-green) 0 270deg, rgba(255, 255, 255, 0.07) 270deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-value {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .days-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .expiry-pill {
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 0.55rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #000;
+      font-size: 0.82rem;
+      font-weight: 500;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .expiry-pill .expiry-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .expiry-pill .label {
+      color: #ff3838;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    /* DATE STRIP */
+    .date-strip-wrapper {
+      margin-bottom: 1.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+
+      /* hide scrollbars */
+      -ms-overflow-style: none;      /* IE / Edge */
+      scrollbar-width: none;         /* Firefox */
+    }
+    .date-strip-wrapper::-webkit-scrollbar {
+      display: none;                 /* Chrome / Safari */
+    }
+
+    .date-strip {
+      display: flex;
+      gap: 0.7rem;
+      min-width: max-content;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+    }
+
+    .date-chip {
+      width: 54px;
+      height: 80px;
+      border-radius: 999px;
+      background: #333333;
+      color: #ffffff;
+      font-size: 0.78rem;
+      flex-shrink: 0;
+      scroll-snap-align: center;
+
+      /* center date + day */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .date-chip .day-num {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .date-chip .day-name {
+      opacity: 0.75;
+      font-size: 0.78rem;
+    }
+
+    .date-chip.active {
+      background: var(--flex-green);
+      color: #000000;
+      height: 112px; /* “today” tall green pill */
+    }
+
+    .date-chip.active .day-name {
+      opacity: 1;
+    }
+
+    /* WHITE CONTENT CARD (lower half) */
+    .content-card {
+      background: #ffffff;
+      color: #000000;
+      border-radius: 32px 32px 24px 24px;
+      padding: 1.6rem 1.2rem 1.1rem;
+      margin-top: 0.4rem;
+      margin-left: -1.4rem;
+      margin-right: -1.4rem;
+      padding-bottom: 20rem; /* space above bottom nav */
+    }
+
+    @media (min-width: 768px) {
+      .content-card {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+
+    /* QUICK ACTIONS */
+    .quick-actions-card {
+      background: #000000;
+      color: #ffffff;
+      border-radius: 24px;
+      padding: 1.2rem 1.2rem 1.4rem;
+      margin-bottom: 1.7rem;
+    }
+
+    .quick-actions-title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .qa-btn {
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 0.85rem 0.2rem;
+      background: var(--flex-green);
+      color: #000000;
+      font-weight: 600;
+      font-size: 0.92rem;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+    }
+
+    .qa-btn:hover,
+    .qa-btn:focus {
+      background: #37f17a;
+    }
+
+    /* NOTIFICATIONS */
+    .notifications-title {
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+      font-size: 1rem;
+    }
+
+    .notification-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .notification-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #dddddd;
+    }
+
+    .notification-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .notification-main {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .notification-meta {
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .status-dot-small {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--flex-green);
+    }
+
+    .status-label {
+      color: var(--flex-green);
+      font-weight: 600;
+    }
+
+    .notification-date {
+      color: #555555;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav-wrapper {
+      position: fixed;
+      left: 50%;
+      bottom: 1.1rem;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      padding: 0 1.4rem;
+      pointer-events: none;
+    }
+
+    .bottom-nav {
+      background: var(--flex-green-soft);
+      border-radius: 999px;
+      padding: 0.45rem 0.7rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: auto;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-item-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.08rem;
+      font-size: 0.74rem;
+      color: #000000;
+      padding: 0.35rem 0.1rem;
+      position: relative;
+      z-index: 0;
+    }
+
+    .nav-item-btn i {
+      font-size: 1.1rem;
+    }
+
+    .nav-item-btn.active::before {
+      content: "";
+      position: absolute;
+      inset: -0.45rem -0.45rem;
+      border-radius: 999px;
+      background: var(--flex-green);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- Top greeting + status -->
+  <header class="top-header">
+    <div class="user-info">
+      <div class="user-avatar">
+        <!-- Replace with user avatar -->
+        <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400"
+             alt="User avatar">
+      </div>
+      <div class="user-greeting">
+        Welcome, Elisbrown!
+        <span class="line-2">Your Subscription is</span>
+      </div>
+    </div>
+
+    <div class="status-pill">
+      Active
+      <span class="status-dot"></span>
+    </div>
+  </header>
+
+  <!-- Days left row -->
+  <section class="days-row">
+    <div class="days-left-card">
+      <div class="progress-ring">
+        <span class="progress-value">25</span>
+      </div>
+      <div class="days-label">
+        Days<br>Left
+      </div>
+    </div>
+
+    <div class="expiry-pill">
+      <i class="bi bi-calendar2-week"></i>
+      <div class="expiry-text">
+        <span class="label">Expires</span>
+        <span>Dec 22</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal dates -->
+  <section class="date-strip-wrapper">
+    <div class="date-strip" id="dateStrip">
+      <!-- JS will populate all days of the month here -->
+    </div>
+  </section>
+
+  <!-- White lower card -->
+  <main class="content-card">
+
+    <!-- Quick Actions -->
+    <section class="quick-actions-card">
+      <div class="quick-actions-title">Quick Actions</div>
+      <div class="quick-actions-grid">
+        <button class="qa-btn">View Invoices</button>
+        <button class="qa-btn">Renew</button>
+        <button class="qa-btn">Contact Support</button>
+        <button class="qa-btn">Open FAQs</button>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section>
+      <div class="notifications-title">Notifications</div>
+      <div class="notification-item">
+        <div class="notification-avatar">
+          <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400"
+               alt="Notification avatar">
+        </div>
+        <div class="notification-main">
+          <div class="notification-title">
+            General Infrastructure Maintenance
+          </div>
+          <div class="notification-meta">
+            <span class="status-dot-small"></span>
+            <span class="status-label">Completed</span>
+            <span>–</span>
+            <span class="notification-date">Mar 13, 2025</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Bottom nav (fixed) -->
+<div class="bottom-nav-wrapper">
+  <nav class="bottom-nav">
+    <button class="nav-item-btn active" type="button">
+      <i class="bi bi-house-door"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-cash-coin"></i>
+      <span>Billing</span>
+    </button>
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-receipt"></i>
+      <span>Subscription</span>
+    </button>
+    <button class="nav-item-btn" type="button">
+      <i class="bi bi-gear"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    buildDateStrip();
+    setupBottomNav();
+  });
+
+  function buildDateStrip() {
+    const strip = document.getElementById('dateStrip');
+    if (!strip) return;
+
+    strip.innerHTML = ''; // clear any old content
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-based
+    const todayDate = today.getDate();
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    function daysInMonth(y, m) {
+      return new Date(y, m + 1, 0).getDate();
+    }
+
+    const totalDays = daysInMonth(year, month);
+
+    // List of all days of the month
+    const monthDays = [];
+    for (let d = 1; d <= totalDays; d++) {
+      const cur = new Date(year, month, d);
+      monthDays.push({
+        day: d,
+        label: dayNames[cur.getDay()]
+      });
+    }
+
+    // Helper to create a chip
+    function createChip(day, label, isActive) {
+      const chip = document.createElement('div');
+      chip.className = 'date-chip' + (isActive ? ' active' : '');
+      chip.innerHTML = `
+        <span class="day-num">${day}</span>
+        <span class="day-name">${label}</span>
+      `;
+      strip.appendChild(chip);
+      return chip;
+    }
+
+    const copies = 3;        // 3× month to feel “looped”
+    let activeChip = null;   // today in middle copy
+
+    for (let c = 0; c < copies; c++) {
+      monthDays.forEach(d => {
+        const isMiddleCopy = (c === 1);
+        const isActive = isMiddleCopy && d.day === todayDate;
+        const chip = createChip(d.day, d.label, isActive);
+        if (isActive) activeChip = chip;
+      });
+    }
+
+    const monthWidth = strip.scrollWidth / copies;
+
+    function centerActive() {
+      if (!activeChip) return;
+      const target =
+        activeChip.offsetLeft
+        - strip.clientWidth / 2
+        + activeChip.clientWidth / 2;
+      strip.scrollLeft = target;
+    }
+
+    // Center today after layout; runs on every page load
+    requestAnimationFrame(centerActive);
+    window.addEventListener('load', centerActive);
+
+    // Looping effect while scrolling
+    strip.addEventListener('scroll', () => {
+      const x = strip.scrollLeft;
+      if (x < monthWidth * 0.25) {
+        strip.scrollLeft = x + monthWidth;
+      } else if (x > monthWidth * 1.75) {
+        strip.scrollLeft = x - monthWidth;
+      }
+    });
+  }
+
+  function setupBottomNav() {
+    document.querySelectorAll('.nav-item-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.nav-item-btn')
+          .forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // TODO: route by data-attribute if needed
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

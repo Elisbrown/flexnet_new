@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flexnet – Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#27e46a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/x-icon" href="/user/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="/user/favicon/apple-touch-icon.png">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  >
+
+  <style>
+    :root {
+      --flex-green: #27e46a;
+      --flex-green-soft: #b9f7cf;
+      --bg-dark: #050505;
+      --bg-sidebar: #000000;
+      --bg-surface: #050505;
+      --border-subtle: #222222;
+      --text-muted: #a5a5a5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid #141414;
+      padding: 1.4rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .admin-sidebar-logo-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--flex-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.3rem;
+    }
+
+    .admin-sidebar-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1.1;
+    }
+
+    .admin-sidebar-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .admin-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.8rem;
+      flex: 1;
+    }
+
+    .admin-nav-item + .admin-nav-item {
+      margin-top: 0.2rem;
+    }
+
+    .admin-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 999px;
+      color: #fdfdfd;
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .admin-nav-link i {
+      font-size: 1rem;
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    .admin-nav-link:hover {
+      background: #111111;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active {
+      background: var(--flex-green);
+      color: #000000;
+      opacity: 1;
+    }
+
+    .admin-nav-link.active i {
+      color: #000000;
+    }
+
+    .admin-sidebar-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* MAIN AREA */
+    .admin-main {
+      flex: 1;
+      background: radial-gradient(circle at top, #151515 0, #050505 45%, #000 100%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOPBAR */
+    .admin-topbar {
+      padding: 1rem 1.7rem 0.8rem;
+      border-bottom: 1px solid #151515;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .topbar-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .topbar-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-hamburger {
+      display: none;
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 1.4rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .topbar-search {
+      position: relative;
+      min-width: 220px;
+    }
+
+    .topbar-search input {
+      background: #070707;
+      border-radius: 999px;
+      border: 1px solid #222222;
+      padding: 0.5rem 2.1rem 0.5rem 0.9rem;
+      color: #ffffff;
+      font-size: 0.86rem;
+    }
+
+    .topbar-search input::placeholder {
+      color: #555555;
+    }
+
+    .topbar-search input:focus {
+      outline: none;
+      border-color: var(--flex-green);
+      box-shadow: 0 0 0 1px rgba(39, 228, 106, 0.25);
+    }
+
+    .topbar-search i {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: #666666;
+    }
+
+    .topbar-admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+      border-radius: 999px;
+      background: #050505;
+      border: 1px solid #222222;
+    }
+
+    .topbar-admin-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #333333;
+    }
+
+    .topbar-admin-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .topbar-admin-meta {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .topbar-admin-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .topbar-admin-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .topbar-lang-badge {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      border: 1px solid #333333;
+      color: #cccccc;
+    }
+
+    /* CONTENT */
+    .admin-content {
+      padding: 1.4rem 1.7rem 2rem;
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: #050505;
+      border-radius: 18px;
+      padding: 0.9rem 0.9rem 0.8rem;
+      border: 1px solid #151515;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .kpi-label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+
+    .kpi-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .kpi-chip {
+      font-size: 0.72rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(39, 228, 106, 0.12);
+      color: var(--flex-green);
+    }
+
+    .kpi-footnote {
+      font-size: 0.7rem;
+      color: #707070;
+    }
+
+    .kpi-card--warning .kpi-chip {
+      background: rgba(255, 193, 7, 0.12);
+      color: #ffc107;
+    }
+    .kpi-card--danger .kpi-chip {
+      background: rgba(220, 53, 69, 0.13);
+      color: #ff4b5c;
+    }
+
+    /* ROWS BELOW KPIs */
+    .content-row {
+      display: grid;
+      grid-template-columns: 2fr 2fr;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .content-card {
+      background: #050505;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem;
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .content-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .content-card-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .content-card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .content-card-header small {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .chart-placeholder {
+      height: 210px;
+      border-radius: 14px;
+      border: 1px dashed #303030;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      color: #777777;
+    }
+
+    /* TABLES */
+    .table-wrapper {
+      max-height: 270px;
+      overflow: auto;
+      border-radius: 12px;
+      border: 1px solid #202020;
+    }
+
+    .table-dark-custom {
+      width: 100%;
+      margin-bottom: 0;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .table-dark-custom thead {
+      background: #080808;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .table-dark-custom th,
+    .table-dark-custom td {
+      padding: 0.55rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .table-dark-custom tbody tr:nth-child(even) {
+      background: #060606;
+    }
+
+    .badge-status {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+    }
+
+    .badge-status.success {
+      background: rgba(39, 228, 106, 0.16);
+      color: var(--flex-green);
+    }
+
+    .badge-status.pending {
+      background: rgba(255, 193, 7, 0.16);
+      color: #ffc107;
+    }
+
+    .badge-status.failed {
+      background: rgba(220, 53, 69, 0.16);
+      color: #ff4b5c;
+    }
+
+    .badge-status.open {
+      background: rgba(0, 123, 255, 0.16);
+      color: #58a9ff;
+    }
+
+    .badge-status.closed {
+      background: rgba(128, 128, 128, 0.16);
+      color: #b3b3b3;
+    }
+
+    .pill-link {
+      border-radius: 999px;
+      border: 1px solid #333333;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.74rem;
+      color: #cccccc;
+      text-decoration: none;
+    }
+
+    .pill-link:hover {
+      border-color: var(--flex-green);
+      color: var(--flex-green);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+      .admin-shell.sidebar-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+      }
+
+      .admin-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1030;
+        overflow-y: auto;
+        border-right: 1px solid #141414;
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-main {
+        margin-left: 0;
+      }
+
+      .topbar-hamburger {
+        display: inline-block;
+        cursor: pointer;
+        padding: 0.5rem;
+        margin: -0.5rem;
+      }
+
+      .topbar-hamburger:hover {
+        opacity: 0.8;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .content-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .topbar-search {
+        display: none;
+      }
+
+      .admin-content {
+        padding-inline: 1.1rem;
+      }
+
+      .admin-topbar {
+        padding-inline: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo-circle">
+        <!-- Replace with logo SVG if you like -->
+        <img src="../flexnet-logo.svg" alt="Flexnet logo" class="logo-mark">
+      </div>
+      <div>
+        <div class="admin-sidebar-title">Flexnet</div>
+        <div class="admin-sidebar-sub">Admin panel</div>
+      </div>
+    </div>
+
+    <ul class="admin-nav">
+      <li class="admin-nav-item">
+        <a href="dashboard.html" class="admin-nav-link active">
+          <i class="bi bi-grid-1x2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="locations.html" class="admin-nav-link">
+          <i class="bi bi-building"></i>
+          <span>Locations</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="payments.html" class="admin-nav-link">
+          <i class="bi bi-cash-coin"></i>
+          <span>Payments</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="support.html" class="admin-nav-link">
+          <i class="bi bi-life-preserver"></i>
+          <span>Support</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="faqs.html" class="admin-nav-link">
+          <i class="bi bi-question-circle"></i>
+          <span>FAQs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="admins.html" class="admin-nav-link">
+          <i class="bi bi-people"></i>
+          <span>Admins &amp; Roles</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="logs.html" class="admin-nav-link">
+          <i class="bi bi-activity"></i>
+          <span>System Logs</span>
+        </a>
+      </li>
+      <li class="admin-nav-item">
+        <a href="profile.html" class="admin-nav-link">
+          <i class="bi bi-person-gear"></i>
+          <span>My Profile</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-sidebar-footer">
+      v1.0 · All admin actions are logged.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <!-- TOPBAR -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button class="topbar-hamburger" id="sidebarToggle" type="button">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <div class="topbar-title">Dashboard</div>
+          <div class="topbar-subtitle">
+            Overview of subscriptions, payments, and support activity.
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <input type="text" placeholder="Search subscribers, payments, tickets…">
+          <i class="bi bi-search"></i>
+        </div>
+        <span class="topbar-lang-badge">EN • Light</span>
+        <div class="topbar-admin-pill">
+          <div class="topbar-admin-avatar">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400"
+                 alt="Admin avatar">
+          </div>
+          <div class="topbar-admin-meta">
+            <span class="topbar-admin-name">Elisbrown</span>
+            <span class="topbar-admin-role">System Admin</span>
+          </div>
+          <i class="bi bi-chevron-down" style="font-size: 0.8rem; color:#777;"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+      <!-- KPI row -->
+      <section class="kpi-grid">
+        <div class="kpi-card" id="kpiLocations">
+          <div class="kpi-label">Locations</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">0</div>
+            <span class="kpi-chip">0 active</span>
+          </div>
+          <div class="kpi-footnote">Total properties across system.</div>
+        </div>
+
+        <div class="kpi-card" id="kpiHouseholds">
+          <div class="kpi-label">Households</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">0</div>
+            <span class="kpi-chip">0 active</span>
+          </div>
+          <div class="kpi-footnote">Total rooms / units occupied.</div>
+        </div>
+
+        <div class="kpi-card" id="kpiAdmins">
+          <div class="kpi-label">Admin users</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">0</div>
+            <span class="kpi-chip">0 active</span>
+          </div>
+          <div class="kpi-footnote">Management team size.</div>
+        </div>
+
+        <div class="kpi-card" id="kpiPayments">
+          <div class="kpi-label">Payments</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">0</div>
+            <span class="kpi-chip">0 completed</span>
+          </div>
+          <div class="kpi-footnote">Transactions processed.</div>
+        </div>
+
+        <div class="kpi-card kpi-card--warning">
+          <div class="kpi-label">Expiring in 7 days</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">84</div>
+            <span class="kpi-chip">Needs outreach</span>
+          </div>
+          <div class="kpi-footnote">Send reminders to avoid churn.</div>
+        </div>
+
+        <div class="kpi-card kpi-card--danger">
+          <div class="kpi-label">Open support tickets</div>
+          <div class="kpi-value-row">
+            <div class="kpi-value">7</div>
+            <span class="kpi-chip">SLA: 2h</span>
+          </div>
+          <div class="kpi-footnote">Unresolved or waiting on agent reply.</div>
+        </div>
+      </section>
+
+      <!-- Charts row -->
+      <section class="content-row">
+        <div class="content-card">
+          <div class="content-card-header">
+            <div>
+              <div class="content-card-title">Subscription trend</div>
+              <div class="content-card-subtitle">Last 30 days</div>
+            </div>
+            <small>Coming soon • hook chart.js</small>
+          </div>
+          <div class="chart-placeholder">
+            Line / area chart placeholder (subs created / renewed).
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="content-card-header">
+            <div>
+              <div class="content-card-title">Payments volume</div>
+              <div class="content-card-subtitle">MTN MoMo vs Orange Money</div>
+            </div>
+            <small>Coming soon • hook chart.js</small>
+          </div>
+          <div class="chart-placeholder">
+            Bar / donut chart placeholder (amounts per channel).
+          </div>
+        </div>
+      </section>
+
+      <!-- Tables row -->
+      <section class="content-row">
+        <!-- Recent households -->
+        <div class="content-card">
+          <div class="content-card-header">
+            <div>
+              <div class="content-card-title">Recent households</div>
+              <div class="content-card-subtitle">Latest occupants and units.</div>
+            </div>
+            <a href="location-households.html" class="pill-link">View all</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="table-dark-custom" id="recentHouseholdsTable">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Unit</th>
+                <th>Status</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td colspan="4" class="text-muted text-center py-2">Loading...</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Latest payments -->
+        <div class="content-card">
+          <div class="content-card-header">
+            <div>
+              <div class="content-card-title">Latest payments</div>
+              <div class="content-card-subtitle">Most recent mobile money transactions.</div>
+            </div>
+            <a href="payments.html" class="pill-link">View all</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="table-dark-custom" id="recentPaymentsTable">
+              <thead>
+              <tr>
+                <th>Subscriber</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td colspan="4" class="text-muted text-center py-2">Loading...</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api-client.js"></script>
+
+<script>
+  // Check authentication
+  if (!api.isAuthenticated()) {
+    window.location.href = '/admin/login.html';
+  }
+
+  /**
+   * Load dashboard KPI data from API
+   */
+  async function loadDashboardData() {
+    try {
+      console.log('Loading dashboard data...');
+      
+      // Load locations, households, admins, payments in parallel
+      const [locResp, hhResp, adminResp, payResp] = await Promise.all([
+        api.getLocations(1, 100),
+        api.getHouseholds(null, 1, 100),
+        api.getAdmins(),
+        api.getPayments(1, 100)
+      ]);
+
+      console.log('API Responses:', { locResp, hhResp, adminResp, payResp });
+
+      const locations = locResp.data || [];
+      const households = hhResp.data || [];
+      const admins = adminResp.data || [];
+      const payments = payResp.data || [];
+
+      console.log('Parsed data counts:', { locations: locations.length, households: households.length, admins: admins.length, payments: payments.length });
+
+      // Calculate KPIs
+      const totalLocations = locations.length;
+      const activeLocations = locations.filter(l => l.is_active).length;
+      const totalHouseholds = households.length;
+      const activeHouseholds = households.filter(h => h.is_active).length;
+      const totalAdmins = admins.length;
+      const activeAdmins = admins.filter(a => a.is_active).length;
+      const totalPayments = payments.length;
+      const completedPayments = payments.filter(p => p.status === 'COMPLETED').length;
+      const pendingPayments = payments.filter(p => p.status === 'PENDING').length;
+
+      console.log('Calculated KPIs:', { totalLocations, activeLocations, totalHouseholds, activeHouseholds, totalAdmins, activeAdmins, totalPayments, completedPayments });
+
+      // Update KPI cards
+      updateKPICard('kpiLocations', totalLocations, activeLocations);
+      updateKPICard('kpiHouseholds', totalHouseholds, activeHouseholds);
+      updateKPICard('kpiAdmins', totalAdmins, activeAdmins);
+      updateKPICard('kpiPayments', totalPayments, completedPayments);
+
+      // Populate recent tables
+      populateRecentHouseholds(households.slice(0, 5));
+      populateRecentPayments(payments.slice(0, 5));
+
+      console.log('Dashboard data loaded successfully');
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    }
+  }
+
+  /**
+   * Update KPI card with data
+   */
+  function updateKPICard(cardId, total, active) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    const valueEl = card.querySelector('.kpi-value');
+    const chipEl = card.querySelector('.kpi-chip');
+
+    if (valueEl) valueEl.textContent = total.toLocaleString();
+    if (chipEl) chipEl.textContent = `${active} active`;
+  }
+
+  /**
+   * Populate recent households table
+   */
+  function populateRecentHouseholds(households) {
+    const tbody = document.querySelector('#recentHouseholdsTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    if (households.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-muted text-center py-2">No households</td></tr>';
+      return;
+    }
+
+    households.forEach(hh => {
+      const row = `
+        <tr>
+          <td>${hh.primary_full_name || 'N/A'}</td>
+          <td>${hh.phone_msisdn || 'N/A'}</td>
+          <td>${hh.apartment_label || 'N/A'}</td>
+          <td><span class="badge-status ${hh.is_active ? 'success' : 'pending'}">${hh.is_active ? 'Active' : 'Inactive'}</span></td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  /**
+   * Populate recent payments table
+   */
+  function populateRecentPayments(payments) {
+    const tbody = document.querySelector('#recentPaymentsTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    if (payments.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-muted text-center py-2">No payments</td></tr>';
+      return;
+    }
+
+    payments.forEach(pay => {
+      const statusClass = pay.status === 'COMPLETED' ? 'success' : (pay.status === 'PENDING' ? 'pending' : 'failed');
+      const row = `
+        <tr>
+          <td>${pay.phone_number}</td>
+          <td>${pay.amount.toLocaleString()} XAF</td>
+          <td><span class="badge-status ${statusClass}">${pay.status}</span></td>
+          <td>${new Date(pay.created_at).toLocaleDateString()}</td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // Sidebar toggle on mobile
+  const sidebar = document.getElementById('adminSidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const shell = document.querySelector('.admin-shell');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+      shell.classList.toggle('sidebar-open');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      }
+    });
+
+    // Close sidebar on link click
+    const navLinks = sidebar.querySelectorAll('.admin-nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        shell.classList.remove('sidebar-open');
+      });
+    });
+  }
+
+  // Load dashboard data on page load
+  loadDashboardData();
+</script>
+<script src="/pwa-init.js"></script>
+</body>
+</html>
+
+</body>
+</html>

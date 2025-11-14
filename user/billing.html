@@ -723,24 +723,25 @@
     });
   })();
 
-  // Bottom nav active state (for future SPA routing if needed)
-  document.querySelectorAll('.nav-item-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.nav-item-btn')
-        .forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      
-      // Route based on clicked item
-      const btnText = btn.querySelector('span').textContent.toLowerCase();
-      if (btnText === 'dashboard') {
-        window.location.href = '/user/dashboard.html';
-      } else if (btnText === 'subscription') {
-        window.location.href = '/user/subscriptions.html';
-      } else if (btnText === 'settings') {
-        window.location.href = '/user/settings.html';
+  // Bottom nav routing
+  function setupBottomNav() {
+    const navItems = [
+      { selector: '.nav-item-btn:nth-child(1)', href: '/user/dashboard.html' },
+      { selector: '.nav-item-btn:nth-child(2)', href: '/user/billing.html' },
+      { selector: '.nav-item-btn:nth-child(3)', href: '/user/subscriptions.html' },
+      { selector: '.nav-item-btn:nth-child(4)', href: '/user/settings.html' }
+    ];
+
+    navItems.forEach(function (item) {
+      const btn = document.querySelector(item.selector);
+      if (btn) {
+        btn.addEventListener('click', function () {
+          window.location.href = item.href;
+        });
       }
     });
-  });
+  }
+  setupBottomNav();
 </script>
 <script src="/pwa-init.js"></script>
 </body>

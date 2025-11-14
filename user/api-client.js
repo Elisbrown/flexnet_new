@@ -1,6 +1,6 @@
 /**
  * FlexNet User API Client
- * Handles all API calls for user interface
+ * Handles all API calls for user interface with JWT authentication
  */
 
 class UserAPIClient {
@@ -119,66 +119,42 @@ class UserAPIClient {
     setUserData(data) {
         localStorage.setItem('user_data', JSON.stringify(data));
     }
+
+    /**
+     * Initialize auth check on page load
+     */
+    initAuthCheck() {
+        if (!this.isAuthenticated()) {
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('user_data');
+            window.location.href = '/user/login.html';
+        }
+    }
 }
 
 // Create global API client instance
 const api = new UserAPIClient();
+
+// Auto-check authentication on protected pages (excluding login and onboarding)
+document.addEventListener('DOMContentLoaded', function () {
+    const path = window.location.pathname;
+    if (!path.includes('/user/login.html') && !path.includes('/user/onboarding.html')) {
+        api.initAuthCheck();
+    }
+});
 
 /**
  * Utility functions for form handling
  */
 const FormUtils = {
     /**
-     * Show success message
-     */
-    showSuccess(message) {
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-success alert-dismissible fade show';
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.body.insertBefore(alert, document.body.firstChild);
-        setTimeout(() => alert.remove(), 3000);
-    },
-
-    /**
-     * Show error message
-     */
-    showError(message) {
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-danger alert-dismissible fade show';
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.body.insertBefore(alert, document.body.firstChild);
-        setTimeout(() => alert.remove(), 5000);
-    },
-
-    /**
      * Get form data as object
      */
     getFormData(formId) {
         const form = document.getElementById(formId);
-        if (!form) return null;
-        
+        if (!form) return {};
         const formData = new FormData(form);
-        const data = {};
-        
-        for (let [key, value] of formData.entries()) {
-            if (value === 'on' || value === 'true') {
-                data[key] = true;
-            } else if (value === 'false') {
-                data[key] = false;
-            } else if (!isNaN(value) && value !== '') {
-                data[key] = parseInt(value);
-            } else {
-                data[key] = value;
-            }
-        }
-        
-        return data;
+        return Object.fromEntries(formData);
     },
 
     /**

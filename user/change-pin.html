@@ -165,6 +165,13 @@
 
   <div class="pin-screen">
 
+    <!-- Back button -->
+    <div style="display: flex; justify-content: flex-start; padding: 1rem 0 0.5rem 0;">
+      <button id="backBtn" type="button" style="background: none; border: none; color: var(--flex-green); cursor: pointer; font-size: 1.2rem; padding: 0.5rem;">
+        <i class="bi bi-chevron-left" style="font-size: 1.5rem;"></i>
+      </button>
+    </div>
+
     <!-- Top strip + logo -->
     <div class="pin-header">
       <div class="green-strip">
@@ -213,49 +220,173 @@
 
   <!-- Bootstrap JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
   <script src="api-client.js"></script>
 
   <script>
+    // Design system colors
+    const DESIGN_COLORS = {
+      primary: '#27e46a',
+      primaryHover: '#37f17a',
+      dark: '#050505',
+      success: '#27e46a',
+      error: '#ff4444',
+      warning: '#ffa500'
+    };
+
+    // Configure SweetAlert2 theme
+    const swalConfig = {
+      background: DESIGN_COLORS.dark,
+      color: '#ffffff',
+      confirmButtonColor: DESIGN_COLORS.primary,
+      confirmButtonText: 'OK',
+      cancelButtonColor: '#444444',
+      cancelButtonText: 'Cancel',
+      didOpen: (modal) => {
+        // Style the buttons
+        const confirmBtn = modal.querySelector('.swal2-confirm');
+        const cancelBtn = modal.querySelector('.swal2-cancel');
+        
+        if (confirmBtn) {
+          confirmBtn.style.backgroundColor = DESIGN_COLORS.primary;
+          confirmBtn.style.color = '#000000';
+          confirmBtn.style.fontWeight = '600';
+          confirmBtn.style.borderRadius = '999px';
+          confirmBtn.style.padding = '0.6rem 1.5rem';
+          confirmBtn.style.border = 'none';
+          confirmBtn.style.boxShadow = '0 4px 12px rgba(39, 228, 106, 0.3)';
+        }
+        
+        if (cancelBtn) {
+          cancelBtn.style.backgroundColor = '#333333';
+          cancelBtn.style.color = '#ffffff';
+          cancelBtn.style.fontWeight = '600';
+          cancelBtn.style.borderRadius = '999px';
+          cancelBtn.style.padding = '0.6rem 1.5rem';
+          cancelBtn.style.border = 'none';
+        }
+
+        // Style the title
+        const title = modal.querySelector('.swal2-title');
+        if (title) {
+          title.style.color = '#ffffff';
+          title.style.fontSize = '1.2rem';
+          title.style.fontWeight = '600';
+        }
+
+        // Style the content
+        const content = modal.querySelector('.swal2-html-container');
+        if (content) {
+          content.style.color = '#cccccc';
+        }
+      }
+    };
+
     // Check authentication
     if (!api.isAuthenticated()) {
       window.location.href = '/user/login.html';
     }
 
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', function () {
+      window.location.href = '/user/settings.html';
+    });
+
     // PIN change form
     document.querySelector('.pin-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       
-      const currentPin = document.getElementById('currentPin')?.value.trim() || '';
       const newPin = document.getElementById('newPin').value.trim();
       const confirmPin = document.getElementById('confirmPin').value.trim();
 
-      if (!currentPin) {
-        alert('Please enter your current PIN.');
-        return;
-      }
+      // Validation with SweetAlert2
       if (!newPin || !confirmPin) {
-        alert('Please fill both new PIN fields.');
-        return;
-      }
-      if (newPin !== confirmPin) {
-        alert('New PINs do not match.');
-        return;
-      }
-      if (newPin.length < 4 || newPin.length > 6) {
-        alert('PIN must be between 4 and 6 digits.');
+        Swal.fire({
+          ...swalConfig,
+          icon: 'warning',
+          title: 'Incomplete Fields',
+          html: 'Please fill in both PIN fields.',
+          confirmButtonColor: DESIGN_COLORS.warning
+        });
         return;
       }
 
+      if (newPin !== confirmPin) {
+        Swal.fire({
+          ...swalConfig,
+          icon: 'error',
+          title: 'PINs Do Not Match',
+          html: 'The new PIN and confirm PIN do not match. Please try again.'
+        });
+        return;
+      }
+
+      if (newPin.length < 4 || newPin.length > 6) {
+        Swal.fire({
+          ...swalConfig,
+          icon: 'warning',
+          title: 'Invalid PIN Length',
+          html: 'PIN must be between 4 and 6 digits.',
+          confirmButtonColor: DESIGN_COLORS.warning
+        });
+        return;
+      }
+
+      // Show loading state
+      Swal.fire({
+        ...swalConfig,
+        icon: 'info',
+        title: 'Changing PIN',
+        html: 'Please wait...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       try {
-        const response = await api.changePin(currentPin, newPin);
-        if (response.success) {
-          alert('PIN changed successfully!');
-          window.location.href = '/user/pin-change-success.html';
+        // Call API to change PIN (without current PIN)
+        const response = await fetch('/api/user/change-pin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('user_token')
+          },
+          body: JSON.stringify({ new_pin: newPin })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          Swal.fire({
+            ...swalConfig,
+            icon: 'success',
+            title: 'PIN Changed Successfully!',
+            html: 'Your PIN has been updated. You will be redirected shortly.',
+            confirmButtonColor: DESIGN_COLORS.primary,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+          }).then(() => {
+            window.location.href = '/user/pin-change-success.html';
+          });
         } else {
-          alert('Failed to change PIN: ' + response.message);
+          Swal.fire({
+            ...swalConfig,
+            icon: 'error',
+            title: 'Failed to Change PIN',
+            html: data.message || 'An unexpected error occurred.'
+          });
         }
       } catch (error) {
-        alert('Error: ' + error.message);
+        Swal.fire({
+          ...swalConfig,
+          icon: 'error',
+          title: 'Error',
+          html: error.message || 'Failed to change PIN. Please try again.'
+        });
       }
     });
   </script>

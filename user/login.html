@@ -248,17 +248,17 @@
 
         const data = await response.json();
 
+
         if (data.success) {
-          // Store token and user info
-          localStorage.setItem('token', data.data.token);
-          localStorage.setItem('userType', 'user');
-          localStorage.setItem('user', JSON.stringify(data.data.user));
+          // Store token and user info consistently
+          localStorage.setItem('user_token', data.data.token);
+          localStorage.setItem('user_data', JSON.stringify(data.data.user));
           
           // Check if user needs to change PIN
           if (data.data.user.requires_pin_change) {
-            window.location.href = '/change-pin.html';
+            window.location.href = '/user/change-pin.html';
           } else {
-            window.location.href = '/dashboard.html';
+            window.location.href = '/user/dashboard.html';
           }
         } else {
           alert(data.message || 'Login failed');
@@ -275,3 +275,4 @@
 <script src="/pwa-init.js"></script>
 </body>
 </html>
+

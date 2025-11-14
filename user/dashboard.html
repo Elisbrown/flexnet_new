@@ -423,9 +423,14 @@
       </div>
     </div>
 
-    <div class="status-pill">
-      Active
-      <span class="status-dot"></span>
+    <div style="display: flex; gap: 0.8rem; align-items: center;">
+      <div class="status-pill">
+        Active
+        <span class="status-dot"></span>
+      </div>
+      <button id="logoutBtn" type="button" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1.3rem; padding: 0.3rem;">
+        <i class="bi bi-door-left"></i>
+      </button>
     </div>
   </header>
 
@@ -524,7 +529,19 @@
   document.addEventListener('DOMContentLoaded', function () {
     buildDateStrip();
     setupBottomNav();
+    setupLogout();
   });
+
+  function setupLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function () {
+        localStorage.removeItem('user_token');
+        localStorage.removeItem('user_data');
+        window.location.href = '/user/login.html';
+      });
+    }
+  }
 
   function buildDateStrip() {
     const strip = document.getElementById('dateStrip');
@@ -606,13 +623,20 @@
   }
 
   function setupBottomNav() {
-    document.querySelectorAll('.nav-item-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        document.querySelectorAll('.nav-item-btn')
-          .forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        // TODO: route by data-attribute if needed
-      });
+    const navItems = [
+      { selector: '.nav-item-btn:nth-child(1)', href: '/user/dashboard.html' },
+      { selector: '.nav-item-btn:nth-child(2)', href: '/user/billing.html' },
+      { selector: '.nav-item-btn:nth-child(3)', href: '/user/subscriptions.html' },
+      { selector: '.nav-item-btn:nth-child(4)', href: '/user/settings.html' }
+    ];
+
+    navItems.forEach(function (item) {
+      const btn = document.querySelector(item.selector);
+      if (btn) {
+        btn.addEventListener('click', function () {
+          window.location.href = item.href;
+        });
+      }
     });
   }
 </script>

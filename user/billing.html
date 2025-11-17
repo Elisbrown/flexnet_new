@@ -488,38 +488,7 @@
       <!-- Payment history -->
       <section>
         <div class="history-title">Payment History</div>
-
-        <!-- Successful payment -->
-        <div class="history-item">
-          <div class="history-logo om">
-            OM
-          </div>
-          <div class="history-main">
-            <div class="history-title-text">Successful Payment</div>
-            <div class="history-meta">
-              <span class="status-dot-history success"></span>
-              <span class="amount-success">25,000 XAF</span>
-              <span>–</span>
-              <span class="history-date">Mar 13, 2025</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Failed payment -->
-        <div class="history-item">
-          <div class="history-logo mtn">
-            MoMo
-          </div>
-          <div class="history-main">
-            <div class="history-title-text">Failed Payment</div>
-            <div class="history-meta">
-              <span class="status-dot-history failed"></span>
-              <span class="amount-failed">25,000 XAF</span>
-              <span>–</span>
-              <span class="history-date">Apr 13, 2025</span>
-            </div>
-          </div>
-        </div>
+        <div id="paymentHistory"></div>
       </section>
 
     </div>
@@ -619,6 +588,73 @@
     window.location.href = '/user/login.html';
   }
 
+  let activePlan = null;
+
+  async function loadPlanDetails() {
+    try {
+      const response = await api.getDefaultPlan();
+      activePlan = response.data;
+
+      const description = document.querySelector('.payment-description p');
+      if (description && activePlan?.price_xaf) {
+        description.textContent = `Make a payment of XAF ${activePlan.price_xaf.toLocaleString()} to renew or activate your Flexnet Subscription.`;
+      }
+    } catch (error) {
+      console.error('Failed to load plan details', error);
+    }
+  }
+
+  // Load billing history from API
+  async function loadBillingHistory() {
+    try {
+      const response = await api.getUserBilling();
+      renderPaymentHistory(response.data || []);
+    } catch (error) {
+      console.error('Failed to load billing history:', error);
+      const historyEl = document.getElementById('paymentHistory');
+      if (historyEl) {
+        historyEl.innerHTML = '<p style="color: #999; text-align: center; padding: 1rem 0;">Unable to load payments right now.</p>';
+      }
+    }
+  }
+
+  function renderPaymentHistory(payments) {
+    const historyEl = document.getElementById('paymentHistory');
+    if (!historyEl) return;
+
+    if (!payments.length) {
+      historyEl.innerHTML = '<p style="color: #999; text-align: center; padding: 1rem 0;">No payments yet.</p>';
+      return;
+    }
+
+    historyEl.innerHTML = '';
+
+    payments.forEach(payment => {
+      const isSuccess = payment.status === 'SUCCESS';
+      const isFailed = payment.status === 'FAILED';
+      const logoClass = payment.channel === 'ORANGE_MONEY' ? 'om' : 'mtn';
+      const statusClass = isSuccess ? 'success' : (isFailed ? 'failed' : '');
+      const statusText = isSuccess ? 'Successful Payment' : (isFailed ? 'Failed Payment' : 'Pending Payment');
+      const amountLabel = new Intl.NumberFormat('en-US').format(payment.amount_xaf || 0) + ' XAF';
+      const dateLabel = payment.completed_at || payment.requested_at || payment.created_at;
+
+      historyEl.innerHTML += `
+        <div class="history-item">
+          <div class="history-logo ${logoClass}">${logoClass === 'om' ? 'OM' : 'MoMo'}</div>
+          <div class="history-main">
+            <div class="history-title-text">${statusText}</div>
+            <div class="history-meta">
+              <span class="status-dot-history ${statusClass}"></span>
+              <span class="${isSuccess ? 'amount-success' : isFailed ? 'amount-failed' : ''}">${amountLabel}</span>
+              <span>–</span>
+              <span class="history-date">${new Date(dateLabel).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
   // Provider tab switching + Pay button modal selection
   (function () {
     const providerCard = document.getElementById('providerCard');
@@ -647,6 +683,7 @@
     payBtn.addEventListener('click', async function () {
       const isMtn = providerCard.classList.contains('mtn-active');
       const phoneNumber = phoneInput.value.trim();
+      const provider = isMtn ? 'MTN_MOMO' : 'ORANGE_MONEY';
 
       // Validate phone number
       if (!phoneNumber || phoneNumber.length < 8) {
@@ -671,8 +708,8 @@
       try {
         // Initiate payment via Fapshi
         payBtn.disabled = true;
-        const response = await api.initiatePayment(normalizedPhone, 25000);
-        
+        const response = await api.initiatePayment(normalizedPhone, provider, activePlan?.price_xaf || 25000, activePlan?.id);
+
         if (response.success) {
           // Show processing modal
           const modal = new bootstrap.Modal(modalEl);
@@ -688,14 +725,13 @@
             checkCount++;
             try {
               const statusResponse = await api.getPaymentStatus(transId);
-              
-              if (statusResponse.data.status === 'COMPLETED') {
+
+              if (statusResponse.data.status === 'SUCCESS') {
                 clearInterval(checkInterval);
                 modal.hide();
                 alert('Payment successful! Your subscription has been activated.');
                 phoneInput.value = '';
-                // Redirect or refresh balance
-                window.location.href = '/user/dashboard.html';
+                loadBillingHistory();
               } else if (statusResponse.data.status === 'FAILED' || statusResponse.data.status === 'EXPIRED') {
                 clearInterval(checkInterval);
                 modal.hide();
@@ -742,6 +778,8 @@
     });
   }
   setupBottomNav();
+  loadPlanDetails();
+  loadBillingHistory();
 </script>
 <script src="/pwa-init.js"></script>
 </body>

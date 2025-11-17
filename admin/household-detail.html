@@ -969,21 +969,16 @@
       <!-- Page header -->
       <div class="page-header-row">
         <div class="page-header-main">
-          <div class="breadcrumb-line">Home / Locations / CITADEL COMPLEX HOLDINGS / Room 12</div>
-          <div class="page-title">Sunyin Elisbrown</div>
-          <div class="page-subtitle">
-            Room 12 · CITADEL COMPLEX HOLDINGS · Yaoundé
+          <div class="breadcrumb-line" id="breadcrumbLine">Home / Locations</div>
+          <div class="page-title" id="householdName">Household</div>
+          <div class="page-subtitle" id="householdSubtitle">
+            Loading household details…
           </div>
-          <div class="page-header-meta">
-            <span class="meta-chip status-active">Subscription: Active</span>
-            <span class="meta-chip">Expires: 22 Mar 2025</span>
-            <span class="meta-chip accent">MTN MoMo</span>
-            <span class="meta-chip">Phone: 679 690 703</span>
-          </div>
+          <div class="page-header-meta" id="headerMeta"></div>
         </div>
 
         <div class="page-header-actions">
-          <button class="btn-outline-back" type="button" onclick="window.location.href='location-households.html'">
+          <button class="btn-outline-back" type="button" id="backToHouseholdsBtn">
             <i class="bi bi-arrow-left"></i> Back to Households
           </button>
           <button
@@ -1192,61 +1187,9 @@
                   <th style="width: 110px;">Actions</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="paymentsTableBody">
                 <tr>
-                  <td>2025-03-13 14:12</td>
-                  <td>MTN MoMo</td>
-                  <td>25,000 XAF</td>
-                  <td>MOMO-20250313-9988</td>
-                  <td><span class="badge-status success">Completed</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-icon" title="View details">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>2025-03-13 13:50</td>
-                  <td>Orange Money</td>
-                  <td>25,000 XAF</td>
-                  <td>OM-20250313-7744</td>
-                  <td><span class="badge-status pending">Pending</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button
-                        class="btn-icon"
-                        title="Verify"
-                        data-bs-toggle="modal"
-                        data-bs-target="#paymentDecisionModal"
-                        data-decision="verify"
-                      >
-                        <i class="bi bi-check2"></i>
-                      </button>
-                      <button
-                        class="btn-icon"
-                        title="Reject"
-                        data-bs-toggle="modal"
-                        data-bs-target="#paymentDecisionModal"
-                        data-decision="reject"
-                      >
-                        <i class="bi bi-x"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>2025-02-10 18:05</td>
-                  <td>MTN MoMo</td>
-                  <td>25,000 XAF</td>
-                  <td>MOMO-20250210-1122</td>
-                  <td><span class="badge-status failed">Failed</span></td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn-icon"><i class="bi bi-eye"></i></button>
-                    </div>
-                  </td>
+                  <td colspan="6" class="text-center text-muted">Loading payments…</td>
                 </tr>
                 </tbody>
               </table>
@@ -1258,33 +1201,9 @@
             <div class="support-layout">
               <div>
                 <div class="overview-title">Tickets for this household</div>
-                <div class="support-list">
+                <div class="support-list" id="supportTickets">
                   <div class="ticket-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="ticket-subject">Slow connection in evenings</span>
-                      <span class="ticket-status-chip open">Open</span>
-                    </div>
-                    <div class="ticket-meta">
-                      #4521 · Last reply 5 min ago · Assigned to: NOC Agent
-                    </div>
-                  </div>
-                  <div class="ticket-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="ticket-subject">Billing clarification</span>
-                      <span class="ticket-status-chip closed">Closed</span>
-                    </div>
-                    <div class="ticket-meta">
-                      #4402 · Closed 2 days ago · Resolved by: Billing Admin
-                    </div>
-                  </div>
-                  <div class="ticket-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="ticket-subject">Router offline</span>
-                      <span class="ticket-status-chip closed">Closed</span>
-                    </div>
-                    <div class="ticket-meta">
-                      #4301 · Closed 1 week ago
-                    </div>
+                    <div class="ticket-meta">Tickets will appear here once loaded.</div>
                   </div>
                 </div>
               </div>
@@ -1329,34 +1248,9 @@
                   <th>Details</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="auditTableBody">
                 <tr>
-                  <td>2025-03-13 14:12</td>
-                  <td>Elisbrown</td>
-                  <td>Subscription renewed</td>
-                  <td>subscription</td>
-                  <td>Period 22 Feb–22 Mar 2025, 25,000 XAF</td>
-                </tr>
-                <tr>
-                  <td>2025-03-10 09:02</td>
-                  <td>Billing Admin</td>
-                  <td>Payment verified</td>
-                  <td>payment</td>
-                  <td>Ref MOMO-20250310-4411</td>
-                </tr>
-                <tr>
-                  <td>2025-02-10 18:06</td>
-                  <td>NOC Agent</td>
-                  <td>Ticket closed</td>
-                  <td>ticket</td>
-                  <td>#4301 Router offline</td>
-                </tr>
-                <tr>
-                  <td>2025-01-15 12:30</td>
-                  <td>System</td>
-                  <td>Household created</td>
-                  <td>household</td>
-                  <td>Default PIN set to 1234</td>
+                  <td colspan="5" class="text-center text-muted">Awaiting audit events…</td>
                 </tr>
                 </tbody>
               </table>
@@ -1490,12 +1384,141 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="api-client.js"></script>
 <script>
-  // Enforce admin authentication
   if (!api.isAuthenticated()) {
     window.location.href = '/admin/login.html';
   }
 
-  // Sidebar toggle on mobile
+  const params = new URLSearchParams(window.location.search);
+  const householdId = params.get('household_id');
+  if (!householdId) {
+    window.location.href = '/admin/locations.html';
+  }
+
+  const elements = {
+    breadcrumb: document.getElementById('breadcrumbLine'),
+    name: document.getElementById('householdName'),
+    subtitle: document.getElementById('householdSubtitle'),
+    headerMeta: document.getElementById('headerMeta'),
+    paymentsBody: document.getElementById('paymentsTableBody'),
+    supportList: document.getElementById('supportTickets'),
+    auditBody: document.getElementById('auditTableBody'),
+    backBtn: document.getElementById('backToHouseholdsBtn')
+  };
+
+  const state = {
+    detail: null,
+    selectedPaymentId: null
+  };
+
+  function formatDate(value) {
+    if (!value) return '-';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
+
+  function renderHeader() {
+    const { household, location } = state.detail || {};
+    if (!household) return;
+
+    document.title = `Flexnet – Household Detail · ${household.apartment_label || household.primary_full_name || 'Household'}`;
+    elements.breadcrumb.textContent = `Home / Locations / ${location?.name || 'Location'} / ${household.apartment_label || household.id}`;
+    elements.name.textContent = household.primary_full_name || 'Unnamed household';
+    elements.subtitle.textContent = `${household.apartment_label || 'Unit'} · ${location?.name || 'Location'}${location?.city ? ' · ' + location.city : ''}`;
+
+    const chips = [];
+    const status = (household.subscription_status || 'NONE').toUpperCase();
+    const statusClass = status === 'ACTIVE' ? 'status-active' : status === 'PENDING' ? 'status-pending' : '';
+    chips.push(`<span class="meta-chip ${statusClass}">Subscription: ${status}</span>`);
+    chips.push(`<span class="meta-chip">Expires: ${household.subscription_end_date ? new Date(household.subscription_end_date).toLocaleDateString() : 'N/A'}</span>`);
+    chips.push(`<span class="meta-chip accent">${household.payment_provider || 'Payment'}</span>`);
+    chips.push(`<span class="meta-chip">Phone: ${household.phone_msisdn || '-'}</span>`);
+    elements.headerMeta.innerHTML = chips.join('');
+
+    if (elements.backBtn) {
+      const backUrl = new URL(window.location.origin + '/admin/location-households.html');
+      backUrl.searchParams.set('location_id', household.location_id);
+      elements.backBtn.onclick = () => window.location.href = backUrl.toString();
+    }
+  }
+
+  function renderPayments() {
+    const payments = state.detail?.payments || [];
+    const tbody = elements.paymentsBody;
+    tbody.innerHTML = '';
+
+    if (payments.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No payments found</td></tr>';
+      return;
+    }
+
+    payments.forEach((payment) => {
+      const badgeClass = payment.status === 'SUCCESS' ? 'success' : payment.status === 'FAILED' ? 'failed' : 'pending';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${formatDate(payment.created_at)}</td>
+        <td>${payment.channel || payment.provider || '-'}</td>
+        <td>${payment.amount_xaf ? `${Number(payment.amount_xaf).toLocaleString()} XAF` : '-'}</td>
+        <td>${payment.external_id || payment.provider_txn_id || '-'}</td>
+        <td><span class="badge-status ${badgeClass}">${payment.status || '-'}</span></td>
+        <td>
+          <div class="table-actions">
+            <button class="btn-icon" title="View" onclick="alert('Payment ID: ${payment.id}')">
+              <i class="bi bi-eye"></i>
+            </button>
+            ${payment.status === 'PENDING' ? `
+              <button class="btn-icon" title="Verify" data-decision="verify" data-id="${payment.id}">
+                <i class="bi bi-check2"></i>
+              </button>
+              <button class="btn-icon" title="Reject" data-decision="reject" data-id="${payment.id}">
+                <i class="bi bi-x"></i>
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      `;
+
+      row.querySelectorAll('[data-decision]').forEach(btn => {
+        btn.addEventListener('click', (event) => {
+          state.selectedPaymentId = payment.id;
+          const decision = event.currentTarget.getAttribute('data-decision');
+          document.getElementById('paymentDecisionType').value = decision;
+          document.getElementById('paymentDecisionTitle').textContent = decision === 'verify' ? 'Verify payment' : 'Reject payment';
+          document.getElementById('paymentDecisionText').textContent = decision === 'verify'
+            ? 'Mark this payment as successfully received and apply the subscription if relevant.'
+            : 'Mark this payment as rejected / failed. The subscription will not be activated.';
+          document.getElementById('paymentDecisionSubmitBtn').textContent = decision === 'verify' ? 'Verify payment' : 'Reject payment';
+          document.getElementById('paymentNote').value = '';
+          const modal = new bootstrap.Modal(document.getElementById('paymentDecisionModal'));
+          modal.show();
+        });
+      });
+
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderSupportPlaceholder() {
+    elements.supportList.innerHTML = '<div class="ticket-item"><div class="ticket-meta">No support tickets available for this household yet.</div></div>';
+  }
+
+  function renderAuditPlaceholder() {
+    elements.auditBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Audit trail will appear once events are recorded.</td></tr>';
+  }
+
+  async function loadHousehold() {
+    try {
+      const response = await api.getHouseholdDetails(householdId);
+      state.detail = response.data || {};
+      renderHeader();
+      renderPayments();
+      renderSupportPlaceholder();
+      renderAuditPlaceholder();
+    } catch (error) {
+      alert('Failed to load household: ' + error.message);
+    }
+  }
+
   const sidebar = document.getElementById('adminSidebar');
   const toggleBtn = document.getElementById('sidebarToggle');
   const shell = document.querySelector('.admin-shell');
@@ -1514,9 +1537,7 @@
       }
     });
 
-    // Close sidebar on link click
-    const navLinks = sidebar.querySelectorAll('.admin-nav-link');
-    navLinks.forEach(link => {
+    sidebar.querySelectorAll('.admin-nav-link').forEach(link => {
       link.addEventListener('click', () => {
         sidebar.classList.remove('open');
         shell.classList.remove('sidebar-open');
@@ -1524,37 +1545,27 @@
     });
   }
 
-  // Subscription action modal logic
   const subModalEl = document.getElementById('subscriptionActionModal');
   if (subModalEl) {
     subModalEl.addEventListener('show.bs.modal', function (event) {
       const button = event.relatedTarget;
-      if (!button) return;
-      const action = button.getAttribute('data-action') || 'activate';
-      const titleEl = document.getElementById('subActionTitle');
-      const descEl = document.getElementById('subActionDescription');
+      const action = button?.getAttribute('data-action') || 'activate';
       const actionTypeInput = document.getElementById('subActionType');
       const pauseFields = document.getElementById('subPauseFields');
 
       actionTypeInput.value = action;
       pauseFields.style.display = (action === 'pause') ? 'flex' : 'none';
 
-      if (action === 'activate') {
-        titleEl.textContent = 'Activate subscription';
-        descEl.textContent = 'Set the start and end date for the new active subscription.';
-      } else if (action === 'renew') {
-        titleEl.textContent = 'Renew subscription';
-        descEl.textContent = 'Extend the subscription by setting a new period.';
-      } else if (action === 'pause') {
-        titleEl.textContent = 'Pause subscription';
-        descEl.textContent = 'Temporarily pause the subscription and provide a reason.';
-      } else if (action === 'extend') {
-        titleEl.textContent = 'Extend subscription';
-        descEl.textContent = 'Adjust the end date to extend this subscription period.';
-      }
+      const titleEl = document.getElementById('subActionTitle');
+      const descEl = document.getElementById('subActionDescription');
+      const label = action.charAt(0).toUpperCase() + action.slice(1);
+      titleEl.textContent = `${label} subscription`;
+      descEl.textContent = action === 'pause'
+        ? 'Temporarily pause the subscription and provide a reason.'
+        : 'Configure the subscription dates and details for this household.';
     });
 
-    document.getElementById('subscriptionActionForm').addEventListener('submit', function (e) {
+    document.getElementById('subscriptionActionForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const payload = {
         action: document.getElementById('subActionType').value,
@@ -1563,88 +1574,61 @@
         pause_reason: document.getElementById('pauseReason').value.trim(),
         pause_note: document.getElementById('pauseNote').value.trim()
       };
-      console.log('Subscription action payload:', payload);
-      // TODO: send to backend
 
-      bootstrap.Modal.getInstance(subModalEl).hide();
+      try {
+        await api.applySubscriptionAction(householdId, payload);
+        bootstrap.Modal.getInstance(subModalEl).hide();
+        await loadHousehold();
+        alert('Subscription updated successfully');
+      } catch (error) {
+        alert('Failed to update subscription: ' + error.message);
+      }
     });
   }
 
-  // Payment decision modal logic
   const paymentModalEl = document.getElementById('paymentDecisionModal');
   if (paymentModalEl) {
-    paymentModalEl.addEventListener('show.bs.modal', function (event) {
-      const button = event.relatedTarget;
-      if (!button) return;
-      const decision = button.getAttribute('data-decision') || 'verify';
-      const titleEl = document.getElementById('paymentDecisionTitle');
-      const textEl = document.getElementById('paymentDecisionText');
-      const typeInput = document.getElementById('paymentDecisionType');
-      const submitBtn = document.getElementById('paymentDecisionSubmitBtn');
-
-      typeInput.value = decision;
-      if (decision === 'verify') {
-        titleEl.textContent = 'Verify payment';
-        textEl.textContent = 'Mark this payment as successfully received and apply the subscription if relevant.';
-        submitBtn.textContent = 'Verify payment';
-        submitBtn.classList.remove('btn-danger-compact');
-        submitBtn.classList.add('btn-primary-compact');
-      } else {
-        titleEl.textContent = 'Reject payment';
-        textEl.textContent = 'Mark this payment as rejected / failed. The subscription will not be activated.';
-        submitBtn.textContent = 'Reject payment';
-        submitBtn.classList.remove('btn-primary-compact');
-        submitBtn.classList.add('btn-danger-compact');
-      }
-    });
-
-    document.getElementById('paymentDecisionForm').addEventListener('submit', function (e) {
+    document.getElementById('paymentDecisionForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      if (!state.selectedPaymentId) return;
       const payload = {
         decision: document.getElementById('paymentDecisionType').value,
         note: document.getElementById('paymentNote').value.trim()
       };
-      console.log('Payment decision payload:', payload);
-      // TODO: send to backend
 
-      bootstrap.Modal.getInstance(paymentModalEl).hide();
+      try {
+        await api.decidePayment(state.selectedPaymentId, payload);
+        bootstrap.Modal.getInstance(paymentModalEl).hide();
+        state.selectedPaymentId = null;
+        await loadHousehold();
+        alert('Payment decision saved');
+      } catch (error) {
+        alert('Failed to update payment: ' + error.message);
+      }
     });
   }
 
-  // Support quick reply / new ticket stub
   document.getElementById('sendSupportBtn').addEventListener('click', function () {
-    const mode = document.getElementById('supportType').value;
-    const status = document.getElementById('supportStatus').value;
     const message = document.getElementById('supportMessage').value.trim();
-
     if (!message) {
       alert('Please enter a message before sending.');
       return;
     }
-
-    const payload = {
-      mode,   // 'reply' or 'new'
-      status, // open/pending/closed
-      message
-    };
-    console.log('Support payload:', payload);
-    // TODO: send to backend
-
+    alert('Support messaging will be wired once ticket endpoints are available.');
     document.getElementById('supportMessage').value = '';
   });
 
-  // Reset PIN stub
-  document.getElementById('confirmResetPinBtn').addEventListener('click', function () {
-    const payload = {
-      action: 'reset_pin_to_default',
-      new_pin: '1234',
-      has_changed_default_pin: 0
-    };
-    console.log('Reset PIN payload:', payload);
-    // TODO: call backend
-
-    bootstrap.Modal.getInstance(document.getElementById('resetPinModal')).hide();
+  document.getElementById('confirmResetPinBtn').addEventListener('click', async function () {
+    try {
+      await api.resetHouseholdPin(householdId);
+      bootstrap.Modal.getInstance(document.getElementById('resetPinModal')).hide();
+      alert('PIN reset to default (1234)');
+    } catch (error) {
+      alert('Failed to reset PIN: ' + error.message);
+    }
   });
+
+  loadHousehold();
 </script>
 <script src="/pwa-init.js"></script>
 

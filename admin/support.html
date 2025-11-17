@@ -1251,42 +1251,50 @@
     });
   }
 
-  // Filter stubs
-  document.getElementById('applyTicketFilters').addEventListener('click', () => {
-    const payload = {
-      from: document.getElementById('filterFrom').value,
-      to: document.getElementById('filterTo').value,
-      status: document.getElementById('filterStatus').value,
-      priority: document.getElementById('filterPriority').value,
-      assignee: document.getElementById('filterAssignee').value,
-      search: document.getElementById('filterSearch').value.trim()
+  const filters = {
+    from: document.getElementById('filterFrom'),
+    to: document.getElementById('filterTo'),
+    status: document.getElementById('filterStatus'),
+    priority: document.getElementById('filterPriority'),
+    assignee: document.getElementById('filterAssignee'),
+    search: document.getElementById('filterSearch')
+  };
+
+  function buildFilterPayload() {
+    return {
+      from: filters.from.value,
+      to: filters.to.value,
+      status: filters.status.value,
+      priority: filters.priority.value,
+      assignee: filters.assignee.value,
+      search: filters.search.value.trim()
     };
-    console.log('Apply ticket filters:', payload);
-    // TODO: call backend / reload table
+  }
+
+  document.getElementById('applyTicketFilters').addEventListener('click', () => {
     loadTickets();
   });
 
   document.getElementById('resetTicketFilters').addEventListener('click', () => {
-    document.getElementById('filterFrom').value = '';
-    document.getElementById('filterTo').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterPriority').value = '';
-    document.getElementById('filterAssignee').value = '';
-    document.getElementById('filterSearch').value = '';
-    console.log('Reset ticket filters');
+    Object.values(filters).forEach(input => input.value = '');
     loadTickets();
   });
 
   // Ticket detail modal basic wiring (stub)
   const ticketDetailModal = document.getElementById('ticketDetailModal');
+  let currentTicketId = null;
+  let cachedTickets = [];
   if (ticketDetailModal) {
     ticketDetailModal.addEventListener('show.bs.modal', event => {
       const button = event.relatedTarget;
       const ticketId = button?.getAttribute('data-ticket-id') || 'TK-XXXX';
-      document.getElementById('ticketModalTitle').textContent = 'Ticket ' + ticketId;
+      currentTicketId = ticketId;
 
-      // Example: in real app, fetch ticket details via API here
-      console.log('Open ticket detail modal for', ticketId);
+      const ticket = cachedTickets.find(t => String(t.id) === String(ticketId));
+      document.getElementById('ticketModalTitle').textContent = ticket ? ticket.subject : 'Ticket ' + ticketId;
+      document.getElementById('ticketModalSubtitle').textContent = ticket ? `Household: ${ticket.requester_name || '-'} • Phone: ${ticket.requester_phone || '-'}` : '';
+
+      loadMessages(ticketId);
     });
   }
 
@@ -1306,60 +1314,72 @@
     replyBox.value = text;
   });
 
-  document.getElementById('sendReplyBtn').addEventListener('click', () => {
-    const payload = {
-      reply: document.getElementById('ticketReply').value.trim()
-    };
-    if (!payload.reply) {
+  document.getElementById('sendReplyBtn').addEventListener('click', async () => {
+    const replyText = document.getElementById('ticketReply').value.trim();
+    if (!replyText) {
       alert('Please type a reply first.');
       return;
     }
-    console.log('Send reply payload:', payload);
-    // TODO: POST reply to backend, append to conversation
+    try {
+      await api.addSupportReply(currentTicketId, replyText);
+      document.getElementById('ticketReply').value = '';
+      await loadMessages(currentTicketId);
+    } catch (err) {
+      alert(err.message || 'Failed to send reply');
+    }
   });
 
-  document.getElementById('saveTicketMetaBtn').addEventListener('click', () => {
+  document.getElementById('saveTicketMetaBtn').addEventListener('click', async () => {
     const payload = {
       status: document.getElementById('ticketStatusSelect').value,
       priority: document.getElementById('ticketPrioritySelect').value,
-      assignee: document.getElementById('ticketAssigneeSelect').value,
-      internal_note: document.getElementById('ticketInternalNote').value.trim()
+      assigned_admin_id: document.getElementById('ticketAssigneeSelect').value || null
     };
-    console.log('Save ticket meta payload:', payload);
-    // TODO: send to backend
-    const modal = bootstrap.Modal.getInstance(ticketDetailModal);
-    if (modal) modal.hide();
-    loadTickets();
+    try {
+      await api.updateSupportTicket(currentTicketId, payload);
+      const modal = bootstrap.Modal.getInstance(ticketDetailModal);
+      if (modal) modal.hide();
+      await loadTickets();
+    } catch (err) {
+      alert(err.message || 'Failed to update ticket');
+    }
   });
 
   // New ticket stub
-  document.getElementById('createTicketBtn').addEventListener('click', () => {
+  document.getElementById('createTicketBtn').addEventListener('click', async () => {
     const payload = {
       phone: document.getElementById('newTicketPhone').value.trim(),
       subject: document.getElementById('newTicketSubject').value.trim(),
       message: document.getElementById('newTicketMessage').value.trim()
     };
-    console.log('Create new ticket payload:', payload);
-    // TODO: call backend and refresh queue
-    const modal = bootstrap.Modal.getInstance(document.getElementById('newTicketModal'));
-    if (modal) modal.hide();
-    loadTickets();
+    if (!payload.phone || !payload.subject) {
+      alert('Phone and subject are required.');
+      return;
+    }
+    try {
+      await api.createSupportTicket(payload);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('newTicketModal'));
+      if (modal) modal.hide();
+      await loadTickets();
+    } catch (err) {
+      alert(err.message || 'Failed to create ticket');
+    }
   });
 
   // Load tickets from backend (if api.getSupportTickets exists)
   async function loadTickets() {
     try {
       if (typeof api.getSupportTickets !== 'function') return;
-      const resp = await api.getSupportTickets(1, 200);
-      const tickets = resp.data || [];
+      const resp = await api.getSupportTickets(1, 200, buildFilterPayload());
+      cachedTickets = resp.data || [];
       const tbody = document.getElementById('ticketsTable')?.querySelector('tbody');
       if (!tbody) return;
       tbody.innerHTML = '';
-      if (!tickets.length) {
+      if (!cachedTickets.length) {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">No tickets found</td></tr>';
         return;
       }
-      tickets.forEach(t => {
+      cachedTickets.forEach(t => {
         const tr = document.createElement('tr');
         tr.setAttribute('data-id', t.id || '');
         tr.innerHTML = `
@@ -1369,10 +1389,9 @@
           <td><span class="badge-status ${t.status || ''}">${(t.status || '').toString()}</span></td>
           <td><span class="badge-priority ${t.priority || ''}">${(t.priority || '').toString()}</span></td>
           <td>${t.updated_at ? new Date(t.updated_at).toLocaleString() : ''}</td>
-          <td>${t.assignee || ''}</td>
+          <td>${t.assigned_admin_id || ''}</td>
           <td>
             <div class="table-actions">
-              <button class="btn-icon" title="Assign to me"><i class="bi bi-person-check"></i></button>
               <button class="btn-icon" title="View ticket" data-bs-toggle="modal" data-bs-target="#ticketDetailModal" data-ticket-id="${t.id || ''}"><i class="bi bi-eye"></i></button>
             </div>
           </td>
@@ -1381,6 +1400,36 @@
       });
     } catch (err) {
       console.error('Failed to load tickets', err);
+    }
+  }
+
+  async function loadMessages(ticketId) {
+    const conversation = document.getElementById('ticketConversation');
+    if (!conversation) return;
+    conversation.innerHTML = '';
+    try {
+      const resp = await api.getSupportMessages(ticketId);
+      const messages = resp.data || [];
+      if (!messages.length) {
+        conversation.innerHTML = '<div class="text-muted">No messages yet.</div>';
+        return;
+      }
+      messages.forEach(msg => {
+        const meta = [];
+        meta.push(msg.sender_type || '');
+        if (msg.created_at) meta.push(new Date(msg.created_at).toLocaleString());
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg';
+        msgDiv.innerHTML = `
+          <div class="msg-meta">
+            <span>${meta.join(' • ')}</span>
+          </div>
+          <div class="msg-body">${msg.body || ''}</div>
+        `;
+        conversation.appendChild(msgDiv);
+      });
+    } catch (err) {
+      conversation.innerHTML = '<div class="text-danger">Failed to load messages.</div>';
     }
   }
 

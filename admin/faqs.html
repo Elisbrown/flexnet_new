@@ -1176,37 +1176,92 @@
     }
   });
 
-  // Save FAQ stub
-  document.getElementById('saveFaqBtn').addEventListener('click', () => {
+  async function loadFaqs() {
+    try {
+      const resp = await api.getFaqs();
+      const faqs = resp.data || [];
+      const tbody = document.querySelector('#faqsTable tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      if (!faqs.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No FAQs found</td></tr>';
+        return;
+      }
+
+      faqs.forEach(faq => {
+        const tr = document.createElement('tr');
+        tr.dataset.id = faq.id;
+        tr.dataset.qEn = faq.question_en || '';
+        tr.dataset.qFr = faq.question_fr || '';
+        tr.dataset.aEn = faq.answer_en || '';
+        tr.dataset.aFr = faq.answer_fr || '';
+        tr.dataset.slug = faq.slug || '';
+        tr.dataset.status = faq.is_published ? 'active' : 'inactive';
+
+        tr.innerHTML = `
+          <td>${faq.question_en || ''}</td>
+          <td>${faq.question_fr || ''}</td>
+          <td>${faq.slug || ''}</td>
+          <td>${faq.is_published ? '<span class="badge-status active">Published</span>' : '<span class="badge-status inactive">Draft</span>'}</td>
+          <td>${faq.sort_order ?? ''}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#faqModal" data-mode="edit" data-row-id="${faq.id}"><i class="bi bi-pencil"></i></button>
+              <button class="btn-icon" onclick="deleteFaq(${faq.id})"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      console.error('Failed to load FAQs', error);
+    }
+  }
+
+  async function saveFaq() {
     const payload = {
-      id: document.getElementById('faqId').value || null,
       question_en: document.getElementById('faqQuestionEn').value.trim(),
       question_fr: document.getElementById('faqQuestionFr').value.trim(),
       answer_en: document.getElementById('faqAnswerEn').value.trim(),
       answer_fr: document.getElementById('faqAnswerFr').value.trim(),
       slug: document.getElementById('faqSlug').value.trim(),
-      status: document.getElementById('faqStatus').value
+      is_published: document.getElementById('faqStatus').value === 'active'
     };
 
-    console.log('Save FAQ payload:', payload);
-    // TODO: send to backend (create or update), then refresh table
-
-    const modalInstance = bootstrap.Modal.getInstance(faqModal);
-    if (modalInstance) modalInstance.hide();
-  });
-
-  // Delete FAQ stub
-  deleteFaqBtn.addEventListener('click', () => {
     const id = document.getElementById('faqId').value;
+    try {
+      if (id) {
+        await api.updateFaq(id, payload);
+      } else {
+        await api.createFaq(payload);
+      }
+      const modalInstance = bootstrap.Modal.getInstance(faqModal);
+      if (modalInstance) modalInstance.hide();
+      await loadFaqs();
+    } catch (err) {
+      alert(err.message || 'Failed to save FAQ');
+    }
+  }
+
+  async function deleteFaq(id) {
     if (!id) return;
     if (!confirm('Delete this FAQ?')) return;
+    try {
+      await api.deleteFaq(id);
+      const modalInstance = bootstrap.Modal.getInstance(faqModal);
+      if (modalInstance) modalInstance.hide();
+      await loadFaqs();
+    } catch (err) {
+      alert(err.message || 'Failed to delete FAQ');
+    }
+  }
 
-    console.log('Delete FAQ with id:', id);
-    // TODO: call backend then remove row from table
+  window.deleteFaq = deleteFaq;
+  document.getElementById('saveFaqBtn').addEventListener('click', saveFaq);
+  deleteFaqBtn.addEventListener('click', () => deleteFaq(document.getElementById('faqId').value));
 
-    const modalInstance = bootstrap.Modal.getInstance(faqModal);
-    if (modalInstance) modalInstance.hide();
-  });
+  loadFaqs();
 </script>
 
 </body>

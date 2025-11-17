@@ -68,10 +68,16 @@ class UserAPIClient {
     }
 
     // PAYMENT
-    async initiatePayment(phoneNumber, amount) {
-        return this.request('POST', '/payments/initiate', { 
+    async getDefaultPlan() {
+        return this.request('GET', '/user/plan');
+    }
+
+    async initiatePayment(phoneNumber, paymentMethod, amount, planId) {
+        return this.request('POST', '/payments/initiate', {
             phone_number: phoneNumber,
-            amount: amount
+            payment_method: paymentMethod,
+            amount: amount,
+            plan_id: planId
         });
     }
 

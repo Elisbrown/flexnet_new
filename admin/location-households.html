@@ -1036,15 +1036,15 @@
     }
 
     filteredHouseholds.forEach(household => {
-      const statusClass = household.is_active ? 'active' : 'inactive';
-      const statusText = household.is_active ? 'Active' : 'Inactive';
+      const statusClass = household.subscription_status === 'ACTIVE' ? 'active' : 'inactive';
+      const statusText = household.subscription_status || 'NONE';
       const row = `
         <tr>
-          <td>${household.apartment || '-'}</td>
-          <td>${household.full_name}</td>
-          <td>${household.phone}</td>
+          <td>${household.apartment_label || '-'}</td>
+          <td>${household.primary_full_name}</td>
+          <td>${household.phone_msisdn}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-          <td>${new Date(household.subscription_end_date).toLocaleDateString()}</td>
+          <td>${household.subscription_end_date ? new Date(household.subscription_end_date).toLocaleDateString() : '-'}</td>
           <td>
             <div class="table-actions">
               <button class="btn-icon" title="View" onclick="viewHousehold(${household.id})">
@@ -1070,7 +1070,7 @@
   function viewHousehold(id) {
     const household = households.find(h => h.id === id);
     if (household) {
-      alert(`Name: ${household.full_name}\nPhone: ${household.phone}\nApartment: ${household.apartment || 'N/A'}`);
+      alert(`Name: ${household.primary_full_name}\nPhone: ${household.phone_msisdn}\nApartment: ${household.apartment_label || 'N/A'}`);
     }
   }
 
@@ -1080,9 +1080,9 @@
   function editHousehold(id) {
     const household = households.find(h => h.id === id);
     if (household) {
-      document.getElementById('hhFullName').value = household.full_name;
-      document.getElementById('hhPhone').value = household.phone;
-      document.getElementById('hhApartment').value = household.apartment || '';
+      document.getElementById('hhFullName').value = household.primary_full_name;
+      document.getElementById('hhPhone').value = household.phone_msisdn;
+      document.getElementById('hhApartment').value = household.apartment_label || '';
       document.getElementById('hhEmail').value = household.email || '';
       document.getElementById('hhLang').value = household.preferred_language || 'en';
       document.getElementById('hhNotes').value = household.notes || '';
@@ -1143,12 +1143,10 @@
 
     const editingId = document.getElementById('editingHouseholdId').value;
     const data = {
-      full_name: document.getElementById('hhFullName').value.trim(),
-      phone: document.getElementById('hhPhone').value.trim(),
-      apartment: document.getElementById('hhApartment').value.trim(),
-      email: document.getElementById('hhEmail').value.trim(),
-      preferred_language: document.getElementById('hhLang').value,
-      notes: document.getElementById('hhNotes').value.trim()
+      primary_full_name: document.getElementById('hhFullName').value.trim(),
+      phone_msisdn: document.getElementById('hhPhone').value.trim(),
+      apartment_label: document.getElementById('hhApartment').value.trim(),
+      email: document.getElementById('hhEmail').value.trim()
     };
 
     try {
@@ -1160,6 +1158,7 @@
       } else {
         // Create new household - must pass location_id
         data.location_id = currentLocationId;
+        data.default_pin = '1234';
         await api.createHousehold(data);
         alert('Household created successfully');
       }

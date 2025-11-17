@@ -132,6 +132,50 @@ class APIClient {
         return this.request('GET', `/admin/logs?page=${page}&limit=${limit}`);
     }
 
+    // FAQS
+    async getFaqs() {
+        return this.request('GET', '/admin/faqs');
+    }
+
+    async createFaq(data) {
+        return this.request('POST', '/admin/faqs', data);
+    }
+
+    async updateFaq(id, data) {
+        return this.request('PUT', `/admin/faqs/${id}`, data);
+    }
+
+    async deleteFaq(id) {
+        return this.request('DELETE', `/admin/faqs/${id}`);
+    }
+
+    // SUPPORT TICKETS
+    async getSupportTickets(page = 1, limit = 50, filters = {}) {
+        const params = new URLSearchParams({ page, limit });
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                params.append(key, value);
+            }
+        });
+        return this.request('GET', `/admin/support-tickets?${params.toString()}`);
+    }
+
+    async createSupportTicket(data) {
+        return this.request('POST', '/admin/support-tickets', data);
+    }
+
+    async updateSupportTicket(id, data) {
+        return this.request('PUT', `/admin/support-tickets/${id}`, data);
+    }
+
+    async addSupportReply(id, message) {
+        return this.request('POST', `/admin/support-tickets/${id}/replies`, { message });
+    }
+
+    async getSupportMessages(id) {
+        return this.request('GET', `/admin/support-tickets/${id}/messages`);
+    }
+
     // LOGOUT
     async logout() {
         try {

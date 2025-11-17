@@ -1068,10 +1068,9 @@
    * View household details
    */
   function viewHousehold(id) {
-    const household = households.find(h => h.id === id);
-    if (household) {
-      alert(`Name: ${household.primary_full_name}\nPhone: ${household.phone_msisdn}\nApartment: ${household.apartment_label || 'N/A'}`);
-    }
+    const url = new URL(window.location.origin + '/admin/household-detail.html');
+    url.searchParams.set('household_id', id);
+    window.location.href = url.toString();
   }
 
   /**

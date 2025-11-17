@@ -41,8 +41,15 @@ class APIClient {
     }
 
     // LOCATIONS
-    async getLocations(page = 1, limit = 10) {
-        return this.request('GET', `/admin/locations?page=${page}&limit=${limit}`);
+    async getLocations(params = {}) {
+        const { page = 1, limit = 10, sort_by, order, region, status, search } = params;
+        const query = new URLSearchParams({ page, limit });
+        if (sort_by) query.append('sort_by', sort_by);
+        if (order) query.append('order', order);
+        if (region) query.append('region', region);
+        if (status) query.append('status', status);
+        if (search) query.append('search', search);
+        return this.request('GET', `/admin/locations?${query.toString()}`);
     }
 
     async getLocation(id) {
@@ -62,14 +69,23 @@ class APIClient {
     }
 
     // HOUSEHOLDS
-    async getHouseholds(locationId = null, page = 1, limit = 10) {
-        let endpoint = `/admin/households?page=${page}&limit=${limit}`;
-        if (locationId) endpoint += `&location_id=${locationId}`;
-        return this.request('GET', endpoint);
+    async getHouseholds(params = {}) {
+        const { location_id, page = 1, limit = 10, status, search, sort_by, order } = params;
+        const query = new URLSearchParams({ page, limit });
+        if (location_id) query.append('location_id', location_id);
+        if (status) query.append('status', status);
+        if (search) query.append('search', search);
+        if (sort_by) query.append('sort_by', sort_by);
+        if (order) query.append('order', order);
+        return this.request('GET', `/admin/households?${query.toString()}`);
     }
 
     async getHousehold(id) {
         return this.request('GET', `/admin/households/${id}`);
+    }
+
+    async getHouseholdDetails(id) {
+        return this.getHousehold(id);
     }
 
     async createHousehold(data) {
@@ -80,17 +96,36 @@ class APIClient {
         return this.request('PUT', `/admin/households/${id}`, data);
     }
 
+    async resetHouseholdPin(id) {
+        return this.request('POST', `/admin/households/${id}/reset-pin`, {});
+    }
+
+    async applySubscriptionAction(id, data) {
+        return this.request('POST', `/admin/households/${id}/subscription-action`, data);
+    }
+
     async deleteHousehold(id) {
         return this.request('DELETE', `/admin/households/${id}`);
     }
 
     // PAYMENTS
-    async getPayments(page = 1, limit = 10) {
-        return this.request('GET', `/admin/payments?page=${page}&limit=${limit}`);
+    async getPayments(params = {}) {
+        const { page = 1, limit = 10, status, search, channel, sort_by, order } = params;
+        const query = new URLSearchParams({ page, limit });
+        if (status) query.append('status', status);
+        if (search) query.append('search', search);
+        if (channel) query.append('channel', channel);
+        if (sort_by) query.append('sort_by', sort_by);
+        if (order) query.append('order', order);
+        return this.request('GET', `/admin/payments?${query.toString()}`);
     }
 
     async getPayment(id) {
         return this.request('GET', `/admin/payments/${id}`);
+    }
+
+    async decidePayment(id, data) {
+        return this.request('POST', `/admin/payments/${id}/decision`, data);
     }
 
     // ADMINS

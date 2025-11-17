@@ -59,6 +59,15 @@ const queryOne = async (sql, params = []) => {
     return results[0] || null;
 };
 
+const buildPagination = (req, allowedSort = ['created_at'], defaultSort = 'created_at') => {
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(Math.min(parseInt(req.query.limit, 10) || 10, 100), 1);
+    const offset = (page - 1) * limit;
+    const sortBy = allowedSort.includes(req.query.sort_by) ? req.query.sort_by : defaultSort;
+    const sortOrder = (req.query.order || 'desc').toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+    return { page, limit, offset, sortBy, sortOrder };
+};
+
 // UTILITIES
 const generateToken = (payload, expiresIn = process.env.JWT_ADMIN_EXPIRY) => jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 const hashPassword = async (password) => bcrypt.hash(password, 10);
@@ -225,8 +234,41 @@ app.post('/api/user/logout', verifyUserToken, (req, res) => res.json(successResp
 // LOCATIONS
 app.get('/api/admin/locations', verifyAdminToken, async (req, res) => {
     try {
-        const locations = await query('SELECT * FROM locations ORDER BY created_at DESC');
-        res.json(successResponse('Locations retrieved', locations));
+        const { page, limit, offset, sortBy, sortOrder } = buildPagination(req, ['name', 'created_at', 'region']);
+        const filters = [];
+        const params = [];
+
+        if (req.query.region) {
+            filters.push('region LIKE ?');
+            params.push(`%${req.query.region}%`);
+        }
+
+        if (req.query.status) {
+            if (req.query.status === 'active') {
+                filters.push('is_active = 1');
+            } else if (req.query.status === 'inactive') {
+                filters.push('is_active = 0');
+            }
+        }
+
+        if (req.query.search) {
+            filters.push('(name LIKE ? OR code LIKE ? OR city LIKE ? OR region LIKE ?)');
+            const term = `%${req.query.search}%`;
+            params.push(term, term, term, term);
+        }
+
+        const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+        const totalRow = await queryOne(`SELECT COUNT(*) as total FROM locations ${where}`, params);
+        const locations = await query(
+            `SELECT l.*, (SELECT COUNT(*) FROM households h WHERE h.location_id = l.id) AS household_count
+             FROM locations l ${where} ORDER BY ${sortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+
+        res.json(successResponse('Locations retrieved', {
+            items: locations,
+            pagination: { page, limit, total: totalRow.total, pages: Math.ceil(totalRow.total / limit) }
+        }));
     } catch (error) {
         res.status(500).json(errorResponse('Server error', 500));
     }
@@ -297,14 +339,37 @@ app.delete('/api/admin/locations/:id', verifyAdminToken, async (req, res) => {
 // HOUSEHOLDS
 app.get('/api/admin/households', verifyAdminToken, async (req, res) => {
     try {
-        const locationId = req.query.location_id;
-        let sql = 'SELECT * FROM households';
-        let params = [];
+        const { page, limit, offset, sortBy, sortOrder } = buildPagination(req, ['primary_full_name', 'created_at', 'subscription_status'], 'created_at');
+        const filters = [];
+        const params = [];
 
-        if (locationId) { sql += ' WHERE location_id = ?'; params.push(locationId); }
+        if (req.query.location_id) {
+            filters.push('location_id = ?');
+            params.push(req.query.location_id);
+        }
 
-        const households = await query(sql + ' ORDER BY created_at DESC', params);
-        res.json(successResponse('Households retrieved', households));
+        if (req.query.status) {
+            filters.push('subscription_status = ?');
+            params.push(req.query.status);
+        }
+
+        if (req.query.search) {
+            filters.push('(primary_full_name LIKE ? OR phone_msisdn LIKE ? OR email LIKE ? OR apartment_label LIKE ?)');
+            const term = `%${req.query.search}%`;
+            params.push(term, term, term, term);
+        }
+
+        const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+        const totalRow = await queryOne(`SELECT COUNT(*) as total FROM households ${where}`, params);
+        const households = await query(
+            `SELECT * FROM households ${where} ORDER BY ${sortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+
+        res.json(successResponse('Households retrieved', {
+            items: households,
+            pagination: { page, limit, total: totalRow.total, pages: Math.ceil(totalRow.total / limit) }
+        }));
     } catch (error) {
         res.status(500).json(errorResponse('Server error', 500));
     }
@@ -314,7 +379,23 @@ app.get('/api/admin/households/:id', verifyAdminToken, async (req, res) => {
     try {
         const household = await queryOne('SELECT * FROM households WHERE id = ?', [req.params.id]);
         if (!household) return res.status(404).json(errorResponse('Not found', 404));
-        res.json(successResponse('Household retrieved', household));
+
+        const location = await queryOne('SELECT * FROM locations WHERE id = ?', [household.location_id]);
+        const latestSubscription = await queryOne(
+            'SELECT * FROM subscriptions WHERE household_id = ? ORDER BY created_at DESC LIMIT 1',
+            [household.id]
+        );
+        const recentPayments = await query(
+            'SELECT * FROM payments WHERE household_id = ? ORDER BY created_at DESC LIMIT 10',
+            [household.id]
+        );
+
+        res.json(successResponse('Household retrieved', {
+            household,
+            location,
+            subscription: latestSubscription,
+            payments: recentPayments
+        }));
     } catch (error) {
         res.status(500).json(errorResponse('Server error', 500));
     }
@@ -382,6 +463,87 @@ app.delete('/api/admin/households/:id', verifyAdminToken, async (req, res) => {
     }
 });
 
+app.post('/api/admin/households/:id/reset-pin', verifyAdminToken, async (req, res) => {
+    try {
+        const household = await queryOne('SELECT * FROM households WHERE id = ?', [req.params.id]);
+        if (!household) return res.status(404).json(errorResponse('Not found', 404));
+
+        const hashedDefault = await bcrypt.hash('1234', 10);
+        await query(
+            'UPDATE households SET pin_hash = ?, has_changed_default_pin = 0, updated_at = NOW() WHERE id = ?',
+            [hashedDefault, household.id]
+        );
+
+        await logAction(req.user.id, req.user.name, 'RESET_PIN', 'HOUSEHOLD', household.id);
+        res.json(successResponse('PIN reset to default'));
+    } catch (error) {
+        res.status(500).json(errorResponse('Server error', 500));
+    }
+});
+
+app.post('/api/admin/households/:id/subscription-action', verifyAdminToken, async (req, res) => {
+    try {
+        const household = await queryOne('SELECT * FROM households WHERE id = ?', [req.params.id]);
+        if (!household) return res.status(404).json(errorResponse('Not found', 404));
+
+        const { action, start_date, end_date, pause_reason, pause_note } = req.body;
+        const plan = await getDefaultPlan(process.env.DEFAULT_PLAN_ID);
+        if (!plan) return res.status(400).json(errorResponse('No active plan configured'));
+
+        let subscription = await queryOne(
+            'SELECT * FROM subscriptions WHERE household_id = ? ORDER BY created_at DESC LIMIT 1',
+            [household.id]
+        );
+
+        if (!subscription) {
+            const insert = await query(
+                'INSERT INTO subscriptions (household_id, plan_id, status, start_date, end_date, last_action, created_by_admin) VALUES (?, ?, "PENDING", ?, ?, NULL, ?)',
+                [household.id, plan.id, start_date || null, end_date || null, req.user.id]
+            );
+            subscription = await queryOne('SELECT * FROM subscriptions WHERE id = ?', [insert.insertId]);
+        }
+
+        let newStatus = subscription.status;
+        let newEndDate = end_date || subscription.end_date;
+        let newStartDate = start_date || subscription.start_date;
+
+        switch ((action || '').toUpperCase()) {
+            case 'ACTIVATE':
+            case 'RENEW':
+            case 'EXTEND':
+                newStatus = 'ACTIVE';
+                break;
+            case 'PAUSE':
+                newStatus = 'PAUSED';
+                break;
+            default:
+                return res.status(400).json(errorResponse('Unsupported action'));
+        }
+
+        await query(
+            'UPDATE subscriptions SET status = ?, start_date = ?, end_date = ?, pause_reason = ?, last_action = ?, updated_at = NOW(), created_by_admin = ? WHERE id = ?',
+            [newStatus, newStartDate, newEndDate, pause_reason || null, action.toUpperCase(), req.user.id, subscription.id]
+        );
+
+        await query(
+            'INSERT INTO subscription_events (subscription_id, household_id, event_type, description, actor_type, actor_admin_id, meta_json) VALUES (?, ?, ?, ?, "ADMIN", ?, ?)',
+            [subscription.id, household.id, action.toUpperCase(), pause_note || null, req.user.id, JSON.stringify(req.body || {})]
+        );
+
+        await query(
+            'UPDATE households SET subscription_status = ?, subscription_end_date = ?, updated_at = NOW() WHERE id = ?',
+            [newStatus === 'ACTIVE' ? 'ACTIVE' : newStatus, newEndDate || null, household.id]
+        );
+
+        const updatedSub = await queryOne('SELECT * FROM subscriptions WHERE id = ?', [subscription.id]);
+        await logAction(req.user.id, req.user.name, `${action.toUpperCase()}_SUBSCRIPTION`, 'HOUSEHOLD', household.id);
+
+        res.json(successResponse('Subscription updated', { subscription: updatedSub }));
+    } catch (error) {
+        res.status(500).json(errorResponse('Server error', 500));
+    }
+});
+
 // PAYMENTS
 const getDefaultPlan = async (planId = null) => {
     if (planId) {
@@ -429,8 +591,47 @@ const activateSubscriptionFromPayment = async (paymentRow, providerStatus) => {
 
 app.get('/api/admin/payments', verifyAdminToken, async (req, res) => {
     try {
-        const payments = await query('SELECT * FROM payments ORDER BY created_at DESC');
-        res.json(successResponse('Payments retrieved', payments));
+        const { page, limit, offset, sortBy, sortOrder } = buildPagination(req, ['created_at', 'amount_xaf'], 'created_at');
+        const filters = [];
+        const params = [];
+
+        if (req.query.status) {
+            filters.push('p.status = ?');
+            params.push(req.query.status.toUpperCase());
+        }
+
+        if (req.query.channel) {
+            filters.push('p.channel = ?');
+            params.push(req.query.channel);
+        }
+
+        if (req.query.household_id) {
+            filters.push('p.household_id = ?');
+            params.push(req.query.household_id);
+        }
+
+        if (req.query.search) {
+            filters.push('(p.external_id LIKE ? OR p.provider_txn_id LIKE ? OR h.primary_full_name LIKE ? OR h.phone_msisdn LIKE ?)');
+            const term = `%${req.query.search}%`;
+            params.push(term, term, term, term);
+        }
+
+        const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
+        const totalRow = await queryOne(`SELECT COUNT(*) as total FROM payments p LEFT JOIN households h ON h.id = p.household_id ${where}`, params);
+        const payments = await query(
+            `SELECT p.*, h.primary_full_name, h.phone_msisdn
+             FROM payments p
+             LEFT JOIN households h ON h.id = p.household_id
+             ${where}
+             ORDER BY ${sortBy.startsWith('amount') ? 'p.' + sortBy : 'p.' + sortBy} ${sortOrder}
+             LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+
+        res.json(successResponse('Payments retrieved', {
+            items: payments,
+            pagination: { page, limit, total: totalRow.total, pages: Math.ceil(totalRow.total / limit) }
+        }));
     } catch (error) {
         res.status(500).json(errorResponse('Server error', 500));
     }
@@ -441,6 +642,28 @@ app.get('/api/admin/payments/:id', verifyAdminToken, async (req, res) => {
         const payment = await queryOne('SELECT * FROM payments WHERE id = ?', [req.params.id]);
         if (!payment) return res.status(404).json(errorResponse('Not found', 404));
         res.json(successResponse('Payment retrieved', payment));
+    } catch (error) {
+        res.status(500).json(errorResponse('Server error', 500));
+    }
+});
+
+app.post('/api/admin/payments/:id/decision', verifyAdminToken, async (req, res) => {
+    try {
+        const { decision, note } = req.body;
+        const payment = await queryOne('SELECT * FROM payments WHERE id = ?', [req.params.id]);
+        if (!payment) return res.status(404).json(errorResponse('Not found', 404));
+
+        const resolvedStatus = decision === 'reject' ? 'FAILED' : 'SUCCESS';
+        await query(
+            'UPDATE payments SET status = ?, provider_status = ?, message = ?, updated_at = NOW() WHERE id = ?',
+            [resolvedStatus, resolvedStatus, note || null, payment.id]
+        );
+
+        const refreshed = await queryOne('SELECT * FROM payments WHERE id = ?', [payment.id]);
+        await activateSubscriptionFromPayment(refreshed, refreshed.provider_status);
+        await logAction(req.user.id, req.user.name, 'PAYMENT_DECISION', 'PAYMENT', payment.id);
+
+        res.json(successResponse('Payment updated', refreshed));
     } catch (error) {
         res.status(500).json(errorResponse('Server error', 500));
     }

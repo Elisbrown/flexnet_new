@@ -9,7 +9,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       const token = localStorage.getItem('token');
       const userType = localStorage.getItem('userType');
-      
+
       if (token && userType === 'admin') {
         window.location.href = '/admin/dashboard.html';
       } else if (token && userType === 'user') {
@@ -17,6 +17,8 @@
       } else {
         // Show selection page
         document.getElementById('selection').style.display = 'flex';
+        const landing = document.getElementById('landing');
+        if (landing) landing.style.display = 'block';
       }
     });
     
@@ -120,9 +122,97 @@
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       gap: 2rem;
     }
+
+    .landing-wrapper {
+      display: none;
+      min-height: 100vh;
+      padding: 4rem 1.5rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .landing-hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .landing-hero h1 {
+      font-size: 2.6rem;
+      color: var(--flex-green);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .landing-hero p {
+      color: #cfcfcf;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .cta-btn {
+      background: var(--flex-green);
+      color: #000;
+      border: none;
+      padding: 0.85rem 1.6rem;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(39, 228, 106, 0.2); }
+
+    .cta-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+    }
+
+    .feature-card {
+      background: #050505;
+      border: 1px solid #111;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+
+    .feature-card h3 { color: #fff; margin-bottom: 0.5rem; }
+    .feature-card p { color: #a9a9a9; line-height: 1.5; }
   </style>
 </head>
 <body>
+  <div id="landing" class="landing-wrapper">
+    <div class="landing-hero">
+      <div>
+        <p class="mb-2" style="letter-spacing:1px;text-transform:uppercase;color:#888;">GPS Household Management</p>
+        <h1>Manage every connection with FlexNet precision.</h1>
+        <p>Monitor households, collect payments, and support subscribers without leaving the browser. FlexNet keeps admins and users in sync with secure authentication and reliable data flows.</p>
+        <div class="cta-row">
+          <a class="cta-btn" href="/user/login.html">Launch User App <span aria-hidden="true">→</span></a>
+          <a class="cta-btn cta-secondary" href="/admin/login.html">Admin Portal</a>
+        </div>
+      </div>
+      <div class="feature-card">
+        <h3>Why FlexNet?</h3>
+        <p>Designed for multi-location ISPs, FlexNet centralizes locations, households, payments, FAQs, and support tickets. Keep your team aligned while customers enjoy a smooth onboarding and billing experience.</p>
+      </div>
+    </div>
+  </div>
+
   <div id="selection">
     <div class="header">
       <h1>🌍 FlexNet</h1>

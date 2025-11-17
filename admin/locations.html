@@ -976,7 +976,7 @@
       const row = `
         <tr>
           <td>${location.name}</td>
-          <td>${location.region}</td>
+          <td>${location.region || '-'}</td>
           <td>-</td>
           <td><span class="status-pill ${statusClass}">${statusText}</span></td>
           <td>${new Date(location.created_at).toLocaleDateString()}</td>
@@ -1122,9 +1122,11 @@
     const search = document.getElementById('filterSearch').value.trim().toLowerCase();
 
     filteredLocations = locations.filter(loc => {
-      const matchRegion = !region || loc.region.toLowerCase().includes(region);
+      const regionText = (loc.region || '').toLowerCase();
+      const nameText = (loc.name || '').toLowerCase();
+      const matchRegion = !region || regionText.includes(region);
       const matchStatus = !status || (status === 'active' && loc.is_active) || (status === 'inactive' && !loc.is_active);
-      const matchSearch = !search || loc.name.toLowerCase().includes(search);
+      const matchSearch = !search || nameText.includes(search);
       return matchRegion && matchStatus && matchSearch;
     });
 
